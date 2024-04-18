@@ -36,6 +36,9 @@
             label3 = new Label();
             button1 = new Button();
             pictureBox1 = new PictureBox();
+            label4 = new Label();
+            button2 = new Button();
+            label5 = new Label();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
@@ -91,9 +94,9 @@
             // button1
             // 
             button1.BackColor = SystemColors.Highlight;
-            button1.Location = new Point(473, 443);
+            button1.Location = new Point(404, 430);
             button1.Name = "button1";
-            button1.Size = new Size(80, 40);
+            button1.Size = new Size(216, 40);
             button1.TabIndex = 5;
             button1.Text = "Login";
             button1.UseVisualStyleBackColor = false;
@@ -109,6 +112,34 @@
             pictureBox1.TabIndex = 6;
             pictureBox1.TabStop = false;
             // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(486, 412);
+            label4.Name = "label4";
+            label4.Size = new Size(0, 15);
+            label4.TabIndex = 7;
+            // 
+            // button2
+            // 
+            button2.BackColor = SystemColors.Highlight;
+            button2.Location = new Point(452, 506);
+            button2.Name = "button2";
+            button2.Size = new Size(120, 40);
+            button2.TabIndex = 8;
+            button2.Text = "Sign up";
+            button2.UseVisualStyleBackColor = false;
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Image = Properties.Resources.form_background;
+            label5.Location = new Point(426, 549);
+            label5.Name = "label5";
+            label5.Size = new Size(174, 15);
+            label5.TabIndex = 9;
+            label5.Text = "Create an account if you're new";
+            // 
             // LoginForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -116,6 +147,9 @@
             BackgroundImage = Properties.Resources.form_background;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(984, 661);
+            Controls.Add(label5);
+            Controls.Add(button2);
+            Controls.Add(label4);
             Controls.Add(pictureBox1);
             Controls.Add(button1);
             Controls.Add(label3);
@@ -142,5 +176,8 @@
         private Label label3;
         private Button button1;
         private PictureBox pictureBox1;
+        private Label label4;
+        private Button button2;
+        private Label label5;
     }
 }

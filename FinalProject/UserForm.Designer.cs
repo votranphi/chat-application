@@ -29,17 +29,12 @@ namespace FinalProject
         /// </summary>
         private void InitializeComponent()
         {
-            ListViewItem listViewItem1 = new ListViewItem(new string[] { "User1" }, -1, Color.Empty, Color.Empty, new Font("Segoe UI", 14F));
-            ListViewItem listViewItem2 = new ListViewItem(new string[] { "User2" }, -1, Color.Empty, Color.Empty, new Font("Segoe UI", 14F));
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UserForm));
             textBox1 = new TextBox();
             textBox2 = new TextBox();
             textBox3 = new TextBox();
             button1 = new Button();
-            button2 = new Button();
             listView1 = new ListView();
-            textBox4 = new TextBox();
-            button3 = new Button();
+            listView2 = new ListView();
             SuspendLayout();
             // 
             // textBox1
@@ -70,81 +65,51 @@ namespace FinalProject
             textBox3.Multiline = true;
             textBox3.Name = "textBox3";
             textBox3.ReadOnly = true;
-            textBox3.Size = new Size(650, 50);
+            textBox3.Size = new Size(159, 50);
             textBox3.TabIndex = 2;
-            textBox3.Text = "User ...\r\nStatus (connected, disconnected)\r\n";
+            textBox3.Text = "Username\r\n";
             // 
             // button1
             // 
             button1.BackColor = Color.Transparent;
             button1.BackgroundImage = Properties.Resources.send_icon;
-            button1.BackgroundImageLayout = ImageLayout.Zoom;
+            button1.BackgroundImageLayout = ImageLayout.Stretch;
             button1.Location = new Point(922, 576);
             button1.Name = "button1";
             button1.Size = new Size(50, 50);
             button1.TabIndex = 3;
             button1.UseVisualStyleBackColor = false;
             // 
-            // button2
-            // 
-            button2.BackColor = Color.Transparent;
-            button2.BackgroundImage = Properties.Resources.settingIcon;
-            button2.BackgroundImageLayout = ImageLayout.Zoom;
-            button2.Location = new Point(922, 14);
-            button2.Name = "button2";
-            button2.Size = new Size(50, 50);
-            button2.TabIndex = 4;
-            button2.UseVisualStyleBackColor = false;
-            // 
             // listView1
             // 
-            listView1.GridLines = true;
-            listView1.Items.AddRange(new ListViewItem[] { listViewItem1, listViewItem2 });
-            listView1.Location = new Point(10, 70);
+            listView1.Location = new Point(4, 14);
             listView1.Name = "listView1";
-            listView1.Size = new Size(256, 556);
-            listView1.TabIndex = 5;
+            listView1.Size = new Size(262, 280);
+            listView1.TabIndex = 4;
             listView1.UseCompatibleStateImageBehavior = false;
-            listView1.View = View.List;
             // 
-            // textBox4
+            // listView2
             // 
-            textBox4.Font = new Font("Segoe UI", 12F);
-            textBox4.Location = new Point(10, 12);
-            textBox4.Multiline = true;
-            textBox4.Name = "textBox4";
-            textBox4.Size = new Size(200, 50);
-            textBox4.TabIndex = 6;
-            textBox4.Text = "Find user...";
+            listView2.Location = new Point(4, 346);
+            listView2.Name = "listView2";
+            listView2.Size = new Size(262, 280);
+            listView2.TabIndex = 5;
+            listView2.UseCompatibleStateImageBehavior = false;
             // 
-            // button3
-            // 
-            button3.BackColor = Color.Transparent;
-            button3.BackgroundImage = Properties.Resources.find_icon;
-            button3.BackgroundImageLayout = ImageLayout.Zoom;
-            button3.Location = new Point(216, 12);
-            button3.Name = "button3";
-            button3.Size = new Size(50, 50);
-            button3.TabIndex = 7;
-            button3.UseVisualStyleBackColor = false;
-            // 
-            // MainForm
+            // UserForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackgroundImage = Properties.Resources.form_background;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(984, 661);
-            Controls.Add(button3);
-            Controls.Add(textBox4);
+            Controls.Add(listView2);
             Controls.Add(listView1);
-            Controls.Add(button2);
             Controls.Add(button1);
             Controls.Add(textBox3);
             Controls.Add(textBox2);
             Controls.Add(textBox1);
-            Icon = (Icon)resources.GetObject("$this.Icon");
-            Name = "MainForm";
+            Name = "UserForm";
             Text = "Chat";
             ResumeLayout(false);
             PerformLayout();
@@ -156,9 +121,7 @@ namespace FinalProject
         private TextBox textBox2;
         private TextBox textBox3;
         private Button button1;
-        private Button button2;
         private ListView listView1;
-        private TextBox textBox4;
-        private Button button3;
+        private ListView listView2;
     }
 }
