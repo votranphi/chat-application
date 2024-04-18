@@ -14,6 +14,7 @@ namespace Server
         private Dictionary<string, TcpClient> CLIENT = new Dictionary<string, TcpClient>();
         // group's name to list of usernames
         private Dictionary<string, List<string>> GROUP = new Dictionary<string, List<string>>();
+
         private delegate void SafeCallDelegate(string text);
         private delegate void SafeCallDelegateImage(Bitmap bmp);
 
@@ -24,152 +25,169 @@ namespace Server
 
         private void listen()
         {
-            try
+            tcpListener = new TcpListener(new IPEndPoint(IPAddress.Any, int.Parse(portInput.Text)));
+            tcpListener.Start();
+
+            while (isServerRunning)
             {
-                tcpListener = new TcpListener(new IPEndPoint(IPAddress.Parse(ipInput.Text), int.Parse(portInput.Text)));
-                tcpListener.Start();
+                // accepts if there is a client
+                TcpClient _client = tcpListener.AcceptTcpClient();
 
-                while (isServerRunning)
+                StreamWriter streamWriter = new StreamWriter(_client.GetStream());
+                StreamReader streamReader = new StreamReader(_client.GetStream());
+                streamWriter.AutoFlush = true;
+
+                string msgFromClient = streamReader.ReadLine();
+
+                // solve the sign up signal from client
+                if (msgFromClient == "<Sign_Up>")
                 {
-                    // accepts if there is a client
-                    TcpClient _client = tcpListener.AcceptTcpClient();
+                    string usernameAndPassword = streamReader.ReadLine();
+                    // splitString[0] is username, splitString[1] is password from new client
+                    string[] splitString = usernameAndPassword.Split('|');
 
-                    StreamWriter streamWriter = new StreamWriter(_client.GetStream());
-                    StreamReader streamReader = new StreamReader(_client.GetStream());
-                    streamWriter.AutoFlush = true;
-
-                    string msgFromClient = streamReader.ReadLine();
-
-                    // solve the sign up signal from client
-                    if (msgFromClient == "<Sign_Up>")
+                    if (USER.ContainsKey(splitString[0]))
                     {
-                        string usernameAndPassword = streamReader.ReadLine();
-                        string[] splitString = usernameAndPassword.Split('|');
+                        streamWriter.WriteLine("<Username_Exists>");
+                    }
+                    else
+                    {
+                        streamWriter.WriteLine("<Success>");
+                        // add new username and password to USER list
+                        USER.Add(splitString[0], splitString[1]);
+                        // add new username and TcpClient to CLIENT list
+                        CLIENT.Add(splitString[0], _client);
+                        // print the notifications to richtextbox
+                        IPEndPoint remoteIpEndPoint = _client.Client.RemoteEndPoint as IPEndPoint; // use to get the client's IP and client's port
+                        UpdateChatHistoryThreadSafe($"[{DateTime.Now}] {splitString[0]}({remoteIpEndPoint.Address}:{remoteIpEndPoint.Port}) has just signed up and logged in!\n");
+                        // new thread for the client has just signed up successfully
+                        Thread receiveThread = new Thread(new ThreadStart(() => receiveFromClient(splitString[0])));
+                        receiveThread.Start();
+                        receiveThread.IsBackground = true;
+                    }
 
-                        if (USER.ContainsKey(splitString[0]))
-                        {
-                            streamWriter.WriteLine("<Username_Exists>");
-                        }
-                        else
+                    continue;
+                }
+
+                // solve the login signal from client
+                if (msgFromClient == "<Login>")
+                {
+                    string usernameAndPassword = streamReader.ReadLine();
+                    string[] splitString = usernameAndPassword.Split('|');
+
+                    if (USER.ContainsKey(splitString[0]))
+                    {
+                        if (USER[splitString[0]] == splitString[1])
                         {
                             streamWriter.WriteLine("<Success>");
-                            USER.Add(splitString[0], splitString[1]);
-                        }
-
-                        continue;
-                    }
-
-                    // solve the login signal from client
-                    if (msgFromClient == "<Login>")
-                    {
-                        string usernameAndPassword = streamReader.ReadLine();
-                        string[] splitString = usernameAndPassword.Split('|');
-
-                        if (USER.ContainsKey(splitString[0]))
-                        {
-                            if (USER[splitString[0]] == splitString[1])
-                            {
-                                streamWriter.WriteLine("<Success>");
-                            }
-                            else
-                            {
-                                streamWriter.WriteLine("<Wrong_Password>");
-                            }
+                            // print the notifications to richtextbox
+                            IPEndPoint remoteIpEndPoint = _client.Client.RemoteEndPoint as IPEndPoint; // use to get the client's IP and client's port
+                            UpdateChatHistoryThreadSafe($"[{DateTime.Now}] {splitString[0]}({remoteIpEndPoint.Address}:{remoteIpEndPoint.Port}) has just logged in!\n");
+                            // new thread for the client has just logged in successfully
+                            Thread receiveThread = new Thread(new ThreadStart(() => receiveFromClient(splitString[0])));
+                            receiveThread.Start();
+                            receiveThread.IsBackground = true;
                         }
                         else
                         {
-                            streamWriter.WriteLine("<Username_Not_Exist>");
+                            streamWriter.WriteLine("<Wrong_Password>");
                         }
-
-                        continue;
                     }
+                    else
+                    {
+                        streamWriter.WriteLine("<Username_Not_Exist>");
+                    }
+
+                    continue;
                 }
-            }
-            catch (SocketException ex)
-            {
-                MessageBox.Show(ex.Message);
             }
         }
 
-        private void receiveFromClient(string username, TcpClient _client)
+        private void receiveFromClient(string username)
         {
+            TcpClient _client = CLIENT[username];
             StreamReader streamReader = new StreamReader(_client.GetStream());
-            try
+            StreamWriter streamWriter = new StreamWriter(_client.GetStream());
+            streamWriter.AutoFlush = true;
+
+            while (isServerRunning)
             {
-                while (isServerRunning)
+                string msgFromClient = streamReader.ReadLine();
+
+                // solve the logout signal from client
+                if (msgFromClient == "<Logout>")
                 {
-                    string msgFromClient = streamReader.ReadLine();
+                    IPEndPoint remoteIpEndPoint = _client.Client.RemoteEndPoint as IPEndPoint; // use to get the client's IP and client's port\
+                    UpdateChatHistoryThreadSafe($"[{DateTime.Now}] {username}({remoteIpEndPoint.Address}:{remoteIpEndPoint.Port}) has just logged out!\n");
+                    break;
+                }
 
-                    if (msgFromClient == "<Disconnect>")
+                // solve the image signal from client
+                if (msgFromClient == "<Image>")
+                {
+                    // maximum size of image is 524288 bytes
+                    byte[] bytes = new byte[524288];
+
+                    // wait for client side to complete writing data
+                    Thread.Sleep(1000);
+                    streamReader.BaseStream.Read(bytes, 0, bytes.Length);
+
+                    // SEND TO A GROUP OR SEND TO A USER (LET'S COMPLETE IT LATER)
+                    
+
+                    continue;
+                }
+
+                // solve the message signal from client
+                if (msgFromClient == "<Message>")
+                {
+                    string receiver = streamReader.ReadLine();
+                    string msgToSend = streamReader.ReadLine();
+
+                    // test
+                    UpdateChatHistoryThreadSafe(msgToSend + "\n");
+
+                    // if receiver's name is in CLIENT list, then do sending the message to it
+                    if (CLIENT.ContainsKey(receiver))
                     {
-                        CLIENT.Remove(username);
-                        // Problem 1: two lines below will send the empty string to the client after close
-                        _client.Close();
-                        streamReader.Close();
-                        UpdateChatHistoryThreadSafe($"[{DateTime.Now.ToString()}] {username} disconnected from server!\n");
-                        break;
+                        StreamWriter receiverSW = new StreamWriter(CLIENT[receiver].GetStream());
+                        receiverSW.AutoFlush = true;
+                        receiverSW.WriteLine("<Message>");
+                        receiverSW.WriteLine(msgToSend);
                     }
-
-                    if (msgFromClient == "<Image>")
+                    else
+                    // if group's name is in GROUP list, then do sending the message to users in it
+                    if (GROUP.ContainsKey(receiver))
                     {
-                        // maximum size of image is 524288 bytes
-                        byte[] bytes = new byte[524288];
-                        // wait for client side to complete writing data
-                        Thread.Sleep(1000);
-                        streamReader.BaseStream.Read(bytes, 0, bytes.Length);
-
-                        foreach (TcpClient i in CLIENT.Values)
+                        List<string> usersInGroup = GROUP[receiver];
+                        foreach (string user in usersInGroup)
                         {
-                            if (i != _client)
+                            // only send if the... it's hard to say...
+                            if (_client != CLIENT[user])
                             {
-                                StreamWriter _streamWriter = new StreamWriter(i.GetStream());
-                                _streamWriter.AutoFlush = true;
-                                _streamWriter.WriteLine("<Image>");
-                                _streamWriter.BaseStream.Write(bytes, 0, bytes.Length);
+                                StreamWriter receiverSW = new StreamWriter(CLIENT[user].GetStream());
+                                receiverSW.AutoFlush = true;
+                                receiverSW.WriteLine("<Message>");
+                                receiverSW.WriteLine(msgToSend);
                             }
                         }
-
-                        Bitmap bmp;
-                        using (var ms = new MemoryStream(bytes))
-                        {
-                            bmp = new Bitmap(ms);
-                        }
-
-                        UpdateImageThreadSafe(bmp);
-
-                        continue;
                     }
-
-                    string formattedMsg = $"[{DateTime.Now}] {username}: {msgFromClient}";
-
-                    // send the received message to all the clients except the incoming one
-                    foreach (TcpClient i in CLIENT.Values)
+                    else
                     {
-                        if (i != _client)
-                        {
-                            StreamWriter _streamWriter = new StreamWriter(i.GetStream());
-                            _streamWriter.WriteLine(formattedMsg);
-                            _streamWriter.AutoFlush = true;
-                        }
+                        streamWriter.WriteLine("<UoG_Not_Exist>"); // User_Or_Group_Not_Exist
                     }
-
-                    UpdateChatHistoryThreadSafe(formattedMsg + "\n");
                 }
-            }
-            catch (SocketException sockEx)
-            {
-                _client.Close();
-                streamReader.Close();
             }
         }
 
         private void listenBtn_Click(object sender, EventArgs e)
         {
+            // BUG IS IN THERE WHEN CLICK ON DISCONNECT BUTTON IN SERVER'S FORM
             if (isServerRunning)
             {
                 isServerRunning = false;
                 tcpListener.Stop();
-                statusAndMsg.Text += $"[{DateTime.Now.ToString()}] Stop listening with ip address {ipInput.Text} on port {portInput.Text}\n";
+                statusAndMsg.Text += $"[{DateTime.Now}] Stop listening with ip address {ipInput.Text} on port {portInput.Text}\n";
                 listenBtn.Text = "Listen";
             }
             else
@@ -177,10 +195,13 @@ namespace Server
                 isServerRunning = true;
                 Thread listenThread = new Thread(this.listen);
                 listenThread.Start();
-                statusAndMsg.Text += $"[{DateTime.Now.ToString()}] Start listening with ip address {ipInput.Text} on port {portInput.Text}\n";
+                listenThread.IsBackground = true;
+                statusAndMsg.Text += $"[{DateTime.Now}] Start listening with ip address {ipInput.Text} on port {portInput.Text}\n";
                 listenBtn.Text = "Stop";
             }
         }
+
+        #region UpdateThreadSafe
 
         private void UpdateChatHistoryThreadSafe(string text)
         {
@@ -213,10 +234,6 @@ namespace Server
                 statusAndMsg.Paste();
             }
         }
-
-        #region Responsive
-
-
 
         #endregion
     }

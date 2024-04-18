@@ -27,8 +27,11 @@ namespace Client
 
         private void waitForSignUpResultFromServer()
         {
+            string username = tbUsername.Text;
+            string password = tbPassword.Text;
+
             streamWriter.WriteLine("<Sign_Up>");
-            streamWriter.WriteLine($"{tbUsername.Text}|{tbPassword}");
+            streamWriter.WriteLine($"{username}|{password}");
 
             string msgFromServer = streamReader.ReadLine();
 
@@ -36,14 +39,11 @@ namespace Client
             if (msgFromServer == "<Username_Exists>")
             {
                 MessageBox.Show("Sign up failed! Username already existed!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                streamWriter.Close();
-                streamReader.Close();
-                tcpClient.Close();
                 return;
             }
             if (msgFromServer == "<Success>")
             {
-                new Thread(() => Application.Run(new ClientForm(tcpClient, tbUsername.Text))).Start();
+                new Thread(() => Application.Run(new ClientForm(tcpClient, username))).Start();
                 this.Invoke((MethodInvoker)delegate
                 {
                     this.Close();
@@ -57,7 +57,7 @@ namespace Client
             // exceptions catching
             if (tbUsername.Text == "" || tbPassword.Text == "" || tbServerIP.Text == "" || tbPort.Text == "")
             {
-                MessageBox.Show("Empty Fields", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Empty Fields!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -80,6 +80,7 @@ namespace Client
 
             Thread resultListener = new Thread(new ThreadStart(waitForSignUpResultFromServer));
             resultListener.Start();
+            resultListener.IsBackground = true;
         }
     }
 }

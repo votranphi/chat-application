@@ -9,123 +9,109 @@ namespace Client
     {
         private TcpClient tcpClient;
         private string username;
-        private bool isClientRunning = false;
+        private bool isClientRunning;
         private StreamWriter streamWriter;
         private StreamReader streamReader;
         private delegate void SafeCallDelegate(string text);
         private delegate void SafeCallDelegateImage(Bitmap bmp);
 
-        public ClientForm()
-        {
-            InitializeComponent();
-        }
-
         public ClientForm(TcpClient tcpClient, string username)
         {
             this.tcpClient = tcpClient;
             this.username = username;
+            isClientRunning = false;
             InitializeComponent();
+        }
+
+        private void ClientForm_Load(object sender, EventArgs e)
+        {
+            streamWriter = new StreamWriter(tcpClient.GetStream());
+            streamReader = new StreamReader(tcpClient.GetStream());
+            streamWriter.AutoFlush = true;
+
             this.Text = $"{username}'s ClientForm";
+
+            isClientRunning = true;
+            Thread clientThread = new Thread(() => receiveFromServer());
+            clientThread.Start();
+            clientThread.IsBackground = true;
         }
 
         private void receiveFromServer() // always running
         {
-            streamReader = new StreamReader(tcpClient.GetStream());
-            try
+            
+
+            while (isClientRunning)
             {
-                while (isClientRunning)
+                string msgFromServer = streamReader.ReadLine();
+
+                // solve the image sending message from server
+                if (msgFromServer == "<Image>")
+                {
+                    // maximum size of image is 524288 bytes
+                    byte[] bytes = new byte[524288];
+                    // wait for server side to complete writing data
+                    Thread.Sleep(1000);
+                    streamReader.BaseStream.Read(bytes, 0, bytes.Length);
+
+                    // byte array to image (base64String to image file)
+                    Bitmap bmp;
+                    using (var ms = new MemoryStream(bytes))
+                    {
+                        bmp = new Bitmap(ms);
+                    }
+
+                    // upload the file to the chat box -> upload the file to new dialog
+                    UpdateImageThreadSafe(bmp);
+
+                    continue;
+                }
+
+                if (msgFromServer == "<Message>")
                 {
                     string msg = streamReader.ReadLine();
-
-                    // solve the image sending message from server
-                    if (msg == "<Image>")
-                    {
-                        // maximum size of image is 524288 bytes
-                        byte[] bytes = new byte[524288];
-                        // wait for server side to complete writing data
-                        Thread.Sleep(1000);
-                        streamReader.BaseStream.Read(bytes, 0, bytes.Length);
-
-                        // byte array to image (base64String to image file)
-                        Bitmap bmp;
-                        using (var ms = new MemoryStream(bytes))
-                        {
-                            bmp = new Bitmap(ms);
-                        }
-
-                        // upload the file to the chat box -> upload the file to new dialog
-                        UpdateImageThreadSafe(bmp);
-
-                        continue;
-                    }
-
-                    // the if... below resolves the Problem 1 in ServerForm.cs
-                    if (msg != null && msg != "")
-                    {
-                        UpdateChatHistoryThreadSafe($"{msg}\n");
-                    }
+                    UpdateChatHistoryThreadSafe(msg + "\n");
+                    continue;
                 }
-            }
-            catch (SocketException sockEx)
-            {
-                tcpClient.Close();
-                streamReader.Close();
+
+                if (msgFromServer == "<UoG_Not_Exist>")
+                {
+                    MessageBox.Show("Username or group's name doesn't exist!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    continue;
+                }
             }
         }
 
-        private void connectBtn_Click(object sender, EventArgs e)
+        private void btnLogout_Click(object sender, EventArgs e)
         {
-            try
-            {
-                if (isClientRunning)
-                {
-                    isClientRunning = false;
-                    streamWriter.WriteLine("<Disconnect>");
-                    tcpClient = null;
-                    statusAndMsg.Text += $"[{DateTime.Now}] Disconnected from the server with ip address {ipInput.Text} on port {portInput.Text}\n";
-                    connectBtn.Text = "Connect";
-                }
-                else
-                {
-                    isClientRunning = true;
-                    tcpClient = new TcpClient();
-                    tcpClient.Connect(new IPEndPoint(IPAddress.Parse(ipInput.Text), int.Parse(portInput.Text)));
-                    streamWriter = new StreamWriter(tcpClient.GetStream());
-                    streamWriter.AutoFlush = true;
+            streamWriter.WriteLine("<Logout>");
 
-                    streamWriter.WriteLine(usernameInput.Text);
+            isClientRunning = false;
 
-                    Thread clientThread = new Thread(this.receiveFromServer);
-                    clientThread.Start();
-                    connectBtn.Text = "Disconnect";
-                }
-            }
-            catch (SocketException sockEx)
-            {
-                MessageBox.Show(sockEx.Message, "Network error", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
-                isClientRunning = false;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            new Thread(() => Application.Run(new LoginForm())).Start();
+            this.Close();
         }
 
         private void sendBtn_Click(object sender, EventArgs e)
         {
-            try
+            // exceptions catching
+            if (msgToSend.Text == "")
             {
-                if (tcpClient != null && tcpClient.Connected)
-                {
-                    streamWriter.WriteLine(msgToSend.Text);
-                    statusAndMsg.Text += $"[{DateTime.Now}] {usernameInput.Text}: {msgToSend.Text}\n";
-                    msgToSend.Text = "";
-                }
+                MessageBox.Show("Empty Fields!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
-            catch (Exception ex)
+            if (tbDestination.Text == username)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("Cannot send message to yourself!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
+
+            // implementation
+            streamWriter.WriteLine("<Message>");
+            streamWriter.WriteLine(tbDestination.Text);
+            streamWriter.WriteLine(msgToSend.Text);
+
+            msgToSend.Text = "";
         }
 
         private void msgToSend_KeyPress(object sender, KeyPressEventArgs e)
@@ -137,11 +123,6 @@ namespace Client
                     sendBtn_Click(sender, e);
                 }
             }
-        }
-
-        private void emoBtn_Click(object sender, EventArgs e)
-        {
-            msgToSend.Focus();
         }
 
         private void imageBtn_Click(object sender, EventArgs e)
@@ -168,6 +149,14 @@ namespace Client
             emojiCB.SelectedIndex = -1;
         }
 
+        private void btnCreateGroup_Click(object sender, EventArgs e)
+        {
+            CreateGroupForm createGroupForm = new CreateGroupForm();
+            createGroupForm.ShowDialog();
+        }
+
+        #region UpdateThreadSafe
+
         private void UpdateChatHistoryThreadSafe(string text)
         {
             if (statusAndMsg.InvokeRequired)
@@ -178,19 +167,6 @@ namespace Client
             else
             {
                 statusAndMsg.Text += text;
-            }
-        }
-
-        private void UpdateConnectButtonTextThreadSafe(string text)
-        {
-            if (connectBtn.InvokeRequired)
-            {
-                var d = new SafeCallDelegate(UpdateConnectButtonTextThreadSafe);
-                connectBtn.Invoke(d, new object[] { text });
-            }
-            else
-            {
-                connectBtn.Text = text;
             }
         }
 
@@ -211,81 +187,6 @@ namespace Client
 
                 Clipboard.SetDataObject(bmp);
                 statusAndMsg.Paste();
-            }
-        }
-
-        #region Responsive
-
-        private void ipInput_TextChanged(object sender, EventArgs e)
-        {
-            if (ipInput.Text != "" && portInput.Text != "" && usernameInput.Text != "")
-            {
-                connectBtn.Enabled = true;
-            }
-            else
-            {
-                connectBtn.Enabled = false;
-            }
-        }
-
-        private void portInput_TextChanged(object sender, EventArgs e)
-        {
-            if (ipInput.Text != "" && portInput.Text != "" && usernameInput.Text != "")
-            {
-                connectBtn.Enabled = true;
-            }
-            else
-            {
-                connectBtn.Enabled = false;
-            }
-        }
-
-        private void usernameInput_TextChanged(object sender, EventArgs e)
-        {
-            if (ipInput.Text != "" && portInput.Text != "" && usernameInput.Text != "")
-            {
-                connectBtn.Enabled = true;
-            }
-            else
-            {
-                connectBtn.Enabled = false;
-            }
-        }
-
-        private void connectBtn_TextChanged(object sender, EventArgs e)
-        {
-            if (connectBtn.Text == "Connect")
-            {
-                ipInput.Enabled = true;
-                portInput.Enabled = true;
-                usernameInput.Enabled = true;
-                imageBtn.Enabled = false;
-            }
-            else
-            {
-                ipInput.Enabled = false;
-                portInput.Enabled = false;
-                usernameInput.Enabled = false;
-                imageBtn.Enabled = true;
-            }
-        }
-
-        private void msgToSend_TextChanged(object sender, EventArgs e)
-        {
-            if (msgToSend.Text == "")
-            {
-                sendBtn.Enabled = false;
-            }
-            else
-            {
-                if (connectBtn.Text == "Connect")
-                {
-                    sendBtn.Enabled = false;
-                }
-                else
-                {
-                    sendBtn.Enabled = true;
-                }
             }
         }
 
