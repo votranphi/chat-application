@@ -7,13 +7,12 @@ namespace Server
     public partial class ServerForm : Form
     {
         private TcpListener tcpListener;
-        private Thread listenThread;
         private bool isServerRunning = false;
         // username to its password
         private Dictionary<string, string> USER = new Dictionary<string, string>();
-        // CLIENTname to TcpClient
+        // username to TcpClient
         private Dictionary<string, TcpClient> CLIENT = new Dictionary<string, TcpClient>();
-        // group's name to list of CLIENTnames
+        // group's name to list of usernames
         private Dictionary<string, List<string>> GROUP = new Dictionary<string, List<string>>();
         private delegate void SafeCallDelegate(string text);
         private delegate void SafeCallDelegateImage(Bitmap bmp);
@@ -39,23 +38,50 @@ namespace Server
                     StreamReader streamReader = new StreamReader(_client.GetStream());
                     streamWriter.AutoFlush = true;
 
-                    string CLIENTname = streamReader.ReadLine();
-                    // check if CLIENTname is in CLIENT
-                    if (CLIENT.ContainsKey(CLIENTname))
-                    {
-                        streamWriter.WriteLine("<Invalid_CLIENTname_Exists>");
-                        // _client.Close();
-                    }
-                    else
-                    {
-                        streamWriter.WriteLine("<Accepted>");
-                        Thread _clientThread = new Thread(() => this.receiveFromClient(CLIENTname, _client));
-                        CLIENT.Add(CLIENTname, _client);
-                        _clientThread.Start();
+                    string msgFromClient = streamReader.ReadLine();
 
-                        string clientIPAddress = ((IPEndPoint)_client.Client.RemoteEndPoint).Address.ToString();
-                        string clientPort = ((IPEndPoint)_client.Client.RemoteEndPoint).Port.ToString();
-                        UpdateChatHistoryThreadSafe($"[{DateTime.Now.ToString()}] Accept connection from {CLIENTname} ({clientIPAddress}:{clientPort})\n");
+                    // solve the sign up signal from client
+                    if (msgFromClient == "<Sign_Up>")
+                    {
+                        string usernameAndPassword = streamReader.ReadLine();
+                        string[] splitString = usernameAndPassword.Split('|');
+
+                        if (USER.ContainsKey(splitString[0]))
+                        {
+                            streamWriter.WriteLine("<Username_Exists>");
+                        }
+                        else
+                        {
+                            streamWriter.WriteLine("<Success>");
+                            USER.Add(splitString[0], splitString[1]);
+                        }
+
+                        continue;
+                    }
+
+                    // solve the login signal from client
+                    if (msgFromClient == "<Login>")
+                    {
+                        string usernameAndPassword = streamReader.ReadLine();
+                        string[] splitString = usernameAndPassword.Split('|');
+
+                        if (USER.ContainsKey(splitString[0]))
+                        {
+                            if (USER[splitString[0]] == splitString[1])
+                            {
+                                streamWriter.WriteLine("<Success>");
+                            }
+                            else
+                            {
+                                streamWriter.WriteLine("<Wrong_Password>");
+                            }
+                        }
+                        else
+                        {
+                            streamWriter.WriteLine("<Username_Not_Exist>");
+                        }
+
+                        continue;
                     }
                 }
             }
@@ -65,7 +91,7 @@ namespace Server
             }
         }
 
-        private void receiveFromClient(string CLIENTname, TcpClient _client)
+        private void receiveFromClient(string username, TcpClient _client)
         {
             StreamReader streamReader = new StreamReader(_client.GetStream());
             try
@@ -73,13 +99,14 @@ namespace Server
                 while (isServerRunning)
                 {
                     string msgFromClient = streamReader.ReadLine();
+
                     if (msgFromClient == "<Disconnect>")
                     {
-                        CLIENT.Remove(CLIENTname);
+                        CLIENT.Remove(username);
                         // Problem 1: two lines below will send the empty string to the client after close
                         _client.Close();
                         streamReader.Close();
-                        UpdateChatHistoryThreadSafe($"[{DateTime.Now.ToString()}] {CLIENTname} disconnected from server!\n");
+                        UpdateChatHistoryThreadSafe($"[{DateTime.Now.ToString()}] {username} disconnected from server!\n");
                         break;
                     }
 
@@ -113,7 +140,7 @@ namespace Server
                         continue;
                     }
 
-                    string formattedMsg = $"[{DateTime.Now}] {CLIENTname}: {msgFromClient}";
+                    string formattedMsg = $"[{DateTime.Now}] {username}: {msgFromClient}";
 
                     // send the received message to all the clients except the incoming one
                     foreach (TcpClient i in CLIENT.Values)
@@ -142,14 +169,13 @@ namespace Server
             {
                 isServerRunning = false;
                 tcpListener.Stop();
-                listenThread = null;
                 statusAndMsg.Text += $"[{DateTime.Now.ToString()}] Stop listening with ip address {ipInput.Text} on port {portInput.Text}\n";
                 listenBtn.Text = "Listen";
             }
             else
             {
                 isServerRunning = true;
-                listenThread = new Thread(this.listen);
+                Thread listenThread = new Thread(this.listen);
                 listenThread.Start();
                 statusAndMsg.Text += $"[{DateTime.Now.ToString()}] Start listening with ip address {ipInput.Text} on port {portInput.Text}\n";
                 listenBtn.Text = "Stop";

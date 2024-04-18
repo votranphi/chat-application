@@ -8,17 +8,24 @@ namespace Client
     public partial class ClientForm : Form
     {
         private TcpClient tcpClient;
-        private Thread clientThread;
+        private string username;
         private bool isClientRunning = false;
         private StreamWriter streamWriter;
         private StreamReader streamReader;
         private delegate void SafeCallDelegate(string text);
         private delegate void SafeCallDelegateImage(Bitmap bmp);
-        // List<Image> imageList = new List<Image>();
 
         public ClientForm()
         {
             InitializeComponent();
+        }
+
+        public ClientForm(TcpClient tcpClient, string username)
+        {
+            this.tcpClient = tcpClient;
+            this.username = username;
+            InitializeComponent();
+            this.Text = $"{username}'s ClientForm";
         }
 
         private void receiveFromServer() // always running
@@ -30,19 +37,7 @@ namespace Client
                 {
                     string msg = streamReader.ReadLine();
 
-                    if (msg == "<Invalid_Username_Exists>")
-                    {
-                        UpdateChatHistoryThreadSafe($"Username already exists, please pick another one!\n");
-                        isClientRunning = false;
-                        UpdateConnectButtonTextThreadSafe("Connect");
-                        break;
-                    }
-                    if (msg == "<Accepted>")
-                    {
-                        UpdateChatHistoryThreadSafe($"[{DateTime.Now}] Connected to the server with ip address {ipInput.Text} on port {portInput.Text}\n");
-                        continue;
-                    }
-
+                    // solve the image sending message from server
                     if (msg == "<Image>")
                     {
                         // maximum size of image is 524288 bytes
@@ -100,7 +95,7 @@ namespace Client
 
                     streamWriter.WriteLine(usernameInput.Text);
 
-                    clientThread = new Thread(this.receiveFromServer);
+                    Thread clientThread = new Thread(this.receiveFromServer);
                     clientThread.Start();
                     connectBtn.Text = "Disconnect";
                 }
