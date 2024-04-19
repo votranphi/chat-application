@@ -82,9 +82,9 @@ namespace Server
                         Thread receiveThread = new Thread(new ThreadStart(() => receiveFromClient(splitString[0])));
                         receiveThread.Start();
                         receiveThread.IsBackground = true;
-                    }
 
-                    sendOnlineUsernamesAndGroupnames(streamWriter);
+                        sendOnlineUsernamesAndGroupnames(splitString[0], streamWriter);
+                    }
 
                     continue;
                 }
@@ -112,7 +112,7 @@ namespace Server
                                 // send new online user signal to other clients
                                 foreach (TcpClient tcpClient in CLIENT.Values)
                                 {
-                                    if (_client != tcpClient)
+                                    if (CLIENT[splitString[0]] != tcpClient)
                                     {
                                         StreamWriter _streamWriter = new StreamWriter(tcpClient.GetStream());
                                         _streamWriter.AutoFlush = true;
@@ -128,6 +128,8 @@ namespace Server
                                 Thread receiveThread = new Thread(new ThreadStart(() => receiveFromClient(splitString[0])));
                                 receiveThread.Start();
                                 receiveThread.IsBackground = true;
+
+                                sendOnlineUsernamesAndGroupnames(splitString[0], streamWriter);
                             }
                             else
                             {
@@ -143,8 +145,6 @@ namespace Server
                     {
                         streamWriter.WriteLine("<Username_Not_Exist>");
                     }
-
-                    sendOnlineUsernamesAndGroupnames(streamWriter);
 
                     continue;
                 }
@@ -334,14 +334,14 @@ namespace Server
             }
         }
 
-        private void sendOnlineUsernamesAndGroupnames(StreamWriter streamWriter)
+        private void sendOnlineUsernamesAndGroupnames(string username, StreamWriter streamWriter)
         {
             // send the online users and groups' name right after the client' connection
             streamWriter.WriteLine("<UaG_Name>"); // User_And_Group_Name
             string formatMsg = ""; // example format: "username1|username2|username3,groupname1|groupname2"
             foreach (string user in USER.Keys)
             {
-                if (STATUS[user] == true)
+                if (username != user && STATUS[user] == true)
                 {
                     if (user != USER.Keys.Last())
                     {

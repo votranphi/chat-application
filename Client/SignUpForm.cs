@@ -92,5 +92,11 @@ namespace Client
             resultListener.Start();
             resultListener.IsBackground = true;
         }
+
+        private void lblLogin_Click(object sender, EventArgs e)
+        {
+            new Thread(() => Application.Run(new LoginForm())).Start();
+            this.Close();
+        }
     }
 }

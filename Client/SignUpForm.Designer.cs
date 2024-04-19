@@ -45,6 +45,7 @@ namespace Client
             tbServerIP = new TextBox();
             label7 = new Label();
             tbPassConf = new TextBox();
+            lblLogin = new Label();
             SuspendLayout();
             // 
             // tbUsername
@@ -60,9 +61,9 @@ namespace Client
             tbPassword.Font = new Font("Segoe UI", 14F, FontStyle.Regular, GraphicsUnit.Point);
             tbPassword.Location = new Point(425, 345);
             tbPassword.Name = "tbPassword";
+            tbPassword.PasswordChar = '*';
             tbPassword.Size = new Size(216, 32);
             tbPassword.TabIndex = 3;
-            tbPassword.PasswordChar = '*';
             // 
             // label1
             // 
@@ -174,9 +175,22 @@ namespace Client
             tbPassConf.Font = new Font("Segoe UI", 14F, FontStyle.Regular, GraphicsUnit.Point);
             tbPassConf.Location = new Point(425, 396);
             tbPassConf.Name = "tbPassConf";
+            tbPassConf.PasswordChar = '*';
             tbPassConf.Size = new Size(216, 32);
             tbPassConf.TabIndex = 4;
-            tbPassConf.PasswordChar = '*';
+            // 
+            // lblLogin
+            // 
+            lblLogin.AutoSize = true;
+            lblLogin.Cursor = Cursors.Hand;
+            lblLogin.Font = new Font("Segoe UI", 12F, FontStyle.Italic, GraphicsUnit.Point);
+            lblLogin.Image = Properties.Resources.form_background;
+            lblLogin.Location = new Point(402, 520);
+            lblLogin.Name = "lblLogin";
+            lblLogin.Size = new Size(239, 21);
+            lblLogin.TabIndex = 17;
+            lblLogin.Text = "Already have an account? Log in.";
+            lblLogin.Click += lblLogin_Click;
             // 
             // SignUpForm
             // 
@@ -185,6 +199,7 @@ namespace Client
             BackgroundImage = Properties.Resources.form_background;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(984, 661);
+            Controls.Add(lblLogin);
             Controls.Add(label7);
             Controls.Add(tbPassConf);
             Controls.Add(label5);
@@ -221,5 +236,6 @@ namespace Client
         private TextBox tbServerIP;
         private Label label7;
         private TextBox tbPassConf;
+        private Label lblLogin;
     }
 }

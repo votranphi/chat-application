@@ -51,11 +51,17 @@ namespace Client
 
                     foreach (string user in usernames.Split('|'))
                     {
-                        UpdateOnlineUserDataGridViewThreadSafe(user);
+                        if (user != "")
+                        {
+                            UpdateOnlineUserDataGridViewThreadSafe(user);
+                        }
                     }
                     foreach (string group in groupnames.Split('|'))
                     {
-                        UpdateGroupDataGridViewThreadSafe(group);
+                        if (group != "")
+                        {
+                            UpdateGroupDataGridViewThreadSafe(group);
+                        }
                     }
                 }
 
