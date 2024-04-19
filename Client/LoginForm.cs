@@ -46,7 +46,11 @@ namespace Client
             }
             if (msgFromServer == "<Success>")
             {
-                new Thread(() => Application.Run(new ClientForm(tcpClient, username))).Start();
+                Thread clientFormThread = new Thread(() => Application.Run(new ClientForm(tcpClient, username)));
+                // set the apartment state for the thread to STA for opening OpenFileDialog
+                clientFormThread.SetApartmentState(ApartmentState.STA);
+                clientFormThread.Start();
+
                 this.Invoke((MethodInvoker)delegate
                 {
                     this.Close();

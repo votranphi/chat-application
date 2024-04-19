@@ -39,41 +39,43 @@ namespace Client
 
         private void receiveFromServer() // always running
         {
-            
-
             while (isClientRunning)
             {
                 string msgFromServer = streamReader.ReadLine();
 
-                // solve the image sending message from server
+                // receive messages from other clients
+                if (msgFromServer == "<Message>")
+                {
+                    string senderAndMsg = streamReader.ReadLine();
+                    // splitString[0] is sender's username, splitString[1] is username or group's name, splitStrin[2] is message
+                    string[] splitString = senderAndMsg.Split('|');
+
+                    // update the received message to the RichTextBox
+                    AppendRichTextBox(splitString[0], splitString[1], splitString[2], "");
+
+                    continue;
+                }
+
+                // receive images from other clients
                 if (msgFromServer == "<Image>")
                 {
                     // maximum size of image is 524288 bytes
                     byte[] bytes = new byte[524288];
-                    // wait for server side to complete writing data
-                    Thread.Sleep(1000);
+
+                    string sender = streamReader.ReadLine();
+
                     streamReader.BaseStream.Read(bytes, 0, bytes.Length);
 
-                    // byte array to image (base64String to image file)
-                    Bitmap bmp;
-                    using (var ms = new MemoryStream(bytes))
-                    {
-                        bmp = new Bitmap(ms);
-                    }
+                    // create a new ImageViewForm to display the picture
+                    new Thread(() => Application.Run(new ImageViewForm(bytes, username))).Start();
 
-                    // upload the file to the chat box -> upload the file to new dialog
-                    UpdateImageThreadSafe(bmp);
+                    // update the received message to the RichTextBox
+                    AppendRichTextBox(sender, username, "Sent you a picture.", "");
 
                     continue;
                 }
 
-                if (msgFromServer == "<Message>")
-                {
-                    string msg = streamReader.ReadLine();
-                    UpdateChatHistoryThreadSafe(msg + "\n");
-                    continue;
-                }
-
+                // username or group's name doesn't exist!
                 if (msgFromServer == "<UoG_Not_Exist>")
                 {
                     MessageBox.Show("Username or group's name doesn't exist!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -100,7 +102,7 @@ namespace Client
                 MessageBox.Show("Empty Fields!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            if (tbDestination.Text == username)
+            if (tbReceiver.Text == username)
             {
                 MessageBox.Show("Cannot send message to yourself!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -108,8 +110,10 @@ namespace Client
 
             // implementation
             streamWriter.WriteLine("<Message>");
-            streamWriter.WriteLine(tbDestination.Text);
-            streamWriter.WriteLine(msgToSend.Text);
+            streamWriter.WriteLine($"{username}|{tbReceiver.Text}|{msgToSend.Text}");
+
+            // update the sent message to RichTextBox
+            AppendRichTextBox(username, tbReceiver.Text, msgToSend.Text, "");
 
             msgToSend.Text = "";
         }
@@ -138,7 +142,9 @@ namespace Client
                 image.Save(ms, image.RawFormat);
                 byte[] bytes = ms.ToArray();
 
+                // send the signal message and byte array to server
                 streamWriter.WriteLine("<Image>");
+                streamWriter.WriteLine($"{username}|{tbReceiver.Text}");
                 streamWriter.BaseStream.Write(bytes, 0, bytes.Length);
             }
         }
@@ -151,24 +157,60 @@ namespace Client
 
         private void btnCreateGroup_Click(object sender, EventArgs e)
         {
-            CreateGroupForm createGroupForm = new CreateGroupForm();
-            createGroupForm.ShowDialog();
+            new Thread(() => Application.Run(new CreateGroupForm(tcpClient, username))).Start();
+        }
+
+        // the method use to format the message then update it to RichTextBox
+        // source: https://github.com/trinhvinhphuc/Chat-app/blob/master/Chat-app%20Client/ChatBox.cs
+        private void AppendRichTextBox(string sender, string receiver, string message, string link)
+        {
+            statusAndMsg.BeginInvoke(new MethodInvoker(() =>
+            {
+                Font currentFont = statusAndMsg.SelectionFont;
+
+                //Username
+                statusAndMsg.SelectionStart = statusAndMsg.TextLength;
+                statusAndMsg.SelectionLength = 0;
+                statusAndMsg.SelectionColor = Color.Red;
+                statusAndMsg.SelectionFont = new Font(currentFont.FontFamily, currentFont.Size, FontStyle.Bold);
+                statusAndMsg.AppendText(sender + "<" + receiver + ">");
+                statusAndMsg.SelectionColor = statusAndMsg.ForeColor;
+
+                statusAndMsg.AppendText(": ");
+
+                //Message
+                statusAndMsg.SelectionStart = statusAndMsg.TextLength;
+                statusAndMsg.SelectionLength = 0;
+                statusAndMsg.SelectionColor = Color.Green;
+                statusAndMsg.SelectionFont = new Font(currentFont.FontFamily, currentFont.Size, FontStyle.Regular);
+                statusAndMsg.AppendText(message);
+                statusAndMsg.SelectionColor = statusAndMsg.ForeColor;
+
+                statusAndMsg.AppendText(" ");
+
+                //link
+                statusAndMsg.SelectionStart = statusAndMsg.TextLength;
+                statusAndMsg.SelectionLength = 0;
+                statusAndMsg.SelectionColor = Color.Blue;
+                statusAndMsg.SelectionFont = new Font(currentFont.FontFamily, currentFont.Size, FontStyle.Underline);
+                statusAndMsg.AppendText(link);
+                statusAndMsg.SelectionColor = statusAndMsg.ForeColor;
+
+
+                statusAndMsg.SelectionStart = statusAndMsg.GetFirstCharIndexOfCurrentLine();
+                statusAndMsg.SelectionLength = 0;
+
+                if (sender == this.username)
+                {
+                    statusAndMsg.SelectionAlignment = HorizontalAlignment.Right;
+                }
+                else statusAndMsg.SelectionAlignment = HorizontalAlignment.Left;
+
+                statusAndMsg.AppendText(Environment.NewLine);
+            }));
         }
 
         #region UpdateThreadSafe
-
-        private void UpdateChatHistoryThreadSafe(string text)
-        {
-            if (statusAndMsg.InvokeRequired)
-            {
-                var d = new SafeCallDelegate(UpdateChatHistoryThreadSafe);
-                statusAndMsg.Invoke(d, new object[] { text });
-            }
-            else
-            {
-                statusAndMsg.Text += text;
-            }
-        }
 
         private void UpdateImageThreadSafe(Bitmap bmp)
         {

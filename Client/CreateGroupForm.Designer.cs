@@ -34,6 +34,7 @@
             tbUsersname = new TextBox();
             btnCreate = new Button();
             label3 = new Label();
+            label4 = new Label();
             SuspendLayout();
             // 
             // label1
@@ -76,21 +77,32 @@
             btnCreate.TabIndex = 4;
             btnCreate.Text = "Create";
             btnCreate.UseVisualStyleBackColor = true;
+            btnCreate.Click += btnCreate_Click;
             // 
             // label3
             // 
             label3.AutoSize = true;
             label3.Location = new Point(8, 92);
             label3.Name = "label3";
-            label3.Size = new Size(328, 15);
+            label3.Size = new Size(334, 15);
             label3.TabIndex = 5;
-            label3.Text = "Rule: Every two usernames should be separated by a comma.";
+            label3.Text = "Rule1: Every two usernames should be separated by a comma.";
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(8, 110);
+            label4.Name = "label4";
+            label4.Size = new Size(154, 15);
+            label4.TabIndex = 6;
+            label4.Text = "Rule2: Enter your username.";
             // 
             // CreateGroupForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(345, 114);
+            ClientSize = new Size(345, 134);
+            Controls.Add(label4);
             Controls.Add(label3);
             Controls.Add(btnCreate);
             Controls.Add(tbUsersname);
@@ -111,5 +123,6 @@
         private TextBox tbUsersname;
         private Button btnCreate;
         private Label label3;
+        private Label label4;
     }
 }

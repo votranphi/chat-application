@@ -59,7 +59,7 @@ namespace Server
                         CLIENT.Add(splitString[0], _client);
                         // print the notifications to richtextbox
                         IPEndPoint remoteIpEndPoint = _client.Client.RemoteEndPoint as IPEndPoint; // use to get the client's IP and client's port
-                        UpdateChatHistoryThreadSafe($"[{DateTime.Now}] {splitString[0]}({remoteIpEndPoint.Address}:{remoteIpEndPoint.Port}) has just signed up and logged in!\n");
+                        UpdateClientsStatusThreadSafe($"[{DateTime.Now}] {splitString[0]}({remoteIpEndPoint.Address}:{remoteIpEndPoint.Port}) has just signed up and logged in!\n");
                         // new thread for the client has just signed up successfully
                         Thread receiveThread = new Thread(new ThreadStart(() => receiveFromClient(splitString[0])));
                         receiveThread.Start();
@@ -82,7 +82,7 @@ namespace Server
                             streamWriter.WriteLine("<Success>");
                             // print the notifications to richtextbox
                             IPEndPoint remoteIpEndPoint = _client.Client.RemoteEndPoint as IPEndPoint; // use to get the client's IP and client's port
-                            UpdateChatHistoryThreadSafe($"[{DateTime.Now}] {splitString[0]}({remoteIpEndPoint.Address}:{remoteIpEndPoint.Port}) has just logged in!\n");
+                            UpdateClientsStatusThreadSafe($"[{DateTime.Now}] {splitString[0]}({remoteIpEndPoint.Address}:{remoteIpEndPoint.Port}) has just logged in!\n");
                             // new thread for the client has just logged in successfully
                             Thread receiveThread = new Thread(new ThreadStart(() => receiveFromClient(splitString[0])));
                             receiveThread.Start();
@@ -118,22 +118,73 @@ namespace Server
                 if (msgFromClient == "<Logout>")
                 {
                     IPEndPoint remoteIpEndPoint = _client.Client.RemoteEndPoint as IPEndPoint; // use to get the client's IP and client's port\
-                    UpdateChatHistoryThreadSafe($"[{DateTime.Now}] {username}({remoteIpEndPoint.Address}:{remoteIpEndPoint.Port}) has just logged out!\n");
+                    UpdateClientsStatusThreadSafe($"[{DateTime.Now}] {username}({remoteIpEndPoint.Address}:{remoteIpEndPoint.Port}) has just logged out!\n");
                     break;
+                }
+
+                // solve the create group signal from client
+                if (msgFromClient == "<Cre_Group>")
+                {
+                    string groupnameAndUsersname = streamReader.ReadLine();
+
+                    // splitString[0] is group's name, splitString[1] is a list of usernames separated by a comma
+                    string[] splitString = groupnameAndUsersname.Split('|');
+                    string[] _username = splitString[1].Split(',');
+
+                    // delete all leading and trailing white-spaces then add to userList
+                    List<string> userList = new List<string>();
+                    for (int i = 0; i < _username.Length; i++)
+                    {
+                        userList.Add(_username[i].Trim());
+                    }
+
+                    // finally, add all the things to the GROUP list
+                    GROUP.Add(splitString[0], userList);
                 }
 
                 // solve the image signal from client
                 if (msgFromClient == "<Image>")
                 {
+                    string senderAndReceiver = streamReader.ReadLine();
+                    // splitString[0] is sender's username, splitString[1] is receiver's username or group's name
+                    string[] splitString = senderAndReceiver.Split('|');
+
                     // maximum size of image is 524288 bytes
                     byte[] bytes = new byte[524288];
-
                     // wait for client side to complete writing data
-                    Thread.Sleep(1000);
                     streamReader.BaseStream.Read(bytes, 0, bytes.Length);
 
-                    // SEND TO A GROUP OR SEND TO A USER (LET'S COMPLETE IT LATER)
-                    
+                    // if receiver's name is in CLIENT list, then do sending the message to it
+                    if (CLIENT.ContainsKey(splitString[1]))
+                    {
+                        StreamWriter receiverSW = new StreamWriter(CLIENT[splitString[1]].GetStream());
+                        receiverSW.AutoFlush = true;
+                        receiverSW.WriteLine("<Image>");
+                        receiverSW.WriteLine(splitString[0]);
+                        receiverSW.BaseStream.Write(bytes, 0, bytes.Length);
+                    }
+                    else
+                    // if group's name is in GROUP list, then do sending the message to users in it
+                    if (GROUP.ContainsKey(splitString[1]))
+                    {
+                        List<string> usersInGroup = GROUP[splitString[1]];
+                        foreach (string user in usersInGroup)
+                        {
+                            // only send if the... it's hard to say...
+                            if (_client != CLIENT[user])
+                            {
+                                StreamWriter receiverSW = new StreamWriter(CLIENT[user].GetStream());
+                                receiverSW.AutoFlush = true;
+                                receiverSW.WriteLine("<Image>");
+                                receiverSW.WriteLine(splitString[0]);
+                                receiverSW.BaseStream.Write(bytes, 0, bytes.Length);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        streamWriter.WriteLine("<UoG_Not_Exist>"); // User_Or_Group_Not_Exist
+                    }
 
                     continue;
                 }
@@ -141,25 +192,23 @@ namespace Server
                 // solve the message signal from client
                 if (msgFromClient == "<Message>")
                 {
-                    string receiver = streamReader.ReadLine();
-                    string msgToSend = streamReader.ReadLine();
-
-                    // test
-                    UpdateChatHistoryThreadSafe(msgToSend + "\n");
+                    string senderAndReceiverAndMsg = streamReader.ReadLine();
+                    // splitString[0] is sender's username, splitString[1] is receiver's username or group's name, splitString[3] is message
+                    string[] splitString = senderAndReceiverAndMsg.Split('|');
 
                     // if receiver's name is in CLIENT list, then do sending the message to it
-                    if (CLIENT.ContainsKey(receiver))
+                    if (CLIENT.ContainsKey(splitString[1]))
                     {
-                        StreamWriter receiverSW = new StreamWriter(CLIENT[receiver].GetStream());
+                        StreamWriter receiverSW = new StreamWriter(CLIENT[splitString[1]].GetStream());
                         receiverSW.AutoFlush = true;
                         receiverSW.WriteLine("<Message>");
-                        receiverSW.WriteLine(msgToSend);
+                        receiverSW.WriteLine(senderAndReceiverAndMsg);
                     }
                     else
                     // if group's name is in GROUP list, then do sending the message to users in it
-                    if (GROUP.ContainsKey(receiver))
+                    if (GROUP.ContainsKey(splitString[1]))
                     {
-                        List<string> usersInGroup = GROUP[receiver];
+                        List<string> usersInGroup = GROUP[splitString[1]];
                         foreach (string user in usersInGroup)
                         {
                             // only send if the... it's hard to say...
@@ -168,7 +217,7 @@ namespace Server
                                 StreamWriter receiverSW = new StreamWriter(CLIENT[user].GetStream());
                                 receiverSW.AutoFlush = true;
                                 receiverSW.WriteLine("<Message>");
-                                receiverSW.WriteLine(msgToSend);
+                                receiverSW.WriteLine(senderAndReceiverAndMsg);
                             }
                         }
                     }
@@ -203,35 +252,16 @@ namespace Server
 
         #region UpdateThreadSafe
 
-        private void UpdateChatHistoryThreadSafe(string text)
+        private void UpdateClientsStatusThreadSafe(string text)
         {
             if (statusAndMsg.InvokeRequired)
             {
-                var d = new SafeCallDelegate(UpdateChatHistoryThreadSafe);
+                var d = new SafeCallDelegate(UpdateClientsStatusThreadSafe);
                 statusAndMsg.Invoke(d, new object[] { text });
             }
             else
             {
                 statusAndMsg.Text += text;
-            }
-        }
-
-        private void UpdateImageThreadSafe(Bitmap bmp)
-        {
-            if (statusAndMsg.InvokeRequired)
-            {
-                var d = new SafeCallDelegateImage(UpdateImageThreadSafe);
-                statusAndMsg.Invoke(d, new object[] { bmp });
-            }
-            else
-            {
-                Clipboard.SetDataObject(bmp);
-                statusAndMsg.Text += "\n";
-                // move cursor to the end of the RTB
-                statusAndMsg.Select(statusAndMsg.Text.Length - 1, 0);
-                // scroll to the end of the RTB
-                statusAndMsg.ScrollToCaret();
-                statusAndMsg.Paste();
             }
         }
 

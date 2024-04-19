@@ -32,7 +32,7 @@
             msgToSend = new RichTextBox();
             statusAndMsg = new RichTextBox();
             btnLogout = new Button();
-            tbDestination = new TextBox();
+            tbReceiver = new TextBox();
             label3 = new Label();
             imageBtn = new Button();
             emojiCB = new ComboBox();
@@ -79,12 +79,12 @@
             btnLogout.UseVisualStyleBackColor = true;
             btnLogout.Click += btnLogout_Click;
             // 
-            // tbDestination
+            // tbReceiver
             // 
-            tbDestination.Location = new Point(62, 8);
-            tbDestination.Name = "tbDestination";
-            tbDestination.Size = new Size(100, 23);
-            tbDestination.TabIndex = 15;
+            tbReceiver.Location = new Point(62, 8);
+            tbReceiver.Name = "tbReceiver";
+            tbReceiver.Size = new Size(100, 23);
+            tbReceiver.TabIndex = 15;
             // 
             // label3
             // 
@@ -137,7 +137,7 @@
             Controls.Add(msgToSend);
             Controls.Add(statusAndMsg);
             Controls.Add(btnLogout);
-            Controls.Add(tbDestination);
+            Controls.Add(tbReceiver);
             Controls.Add(label3);
             Name = "ClientForm";
             Text = "ClientForm";
@@ -152,7 +152,7 @@
         private RichTextBox msgToSend;
         private RichTextBox statusAndMsg;
         private Button btnLogout;
-        private TextBox tbDestination;
+        private TextBox tbReceiver;
         private Label label3;
         private Button imageBtn;
         private ComboBox emojiCB;
