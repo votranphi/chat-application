@@ -49,7 +49,7 @@
             // textBox1
             // 
             textBox1.Font = new Font("Segoe UI", 14F);
-            textBox1.Location = new Point(402, 287);
+            textBox1.Location = new Point(402, 383);
             textBox1.Name = "textBox1";
             textBox1.Size = new Size(216, 32);
             textBox1.TabIndex = 0;
@@ -57,7 +57,7 @@
             // textBox2
             // 
             textBox2.Font = new Font("Segoe UI", 14F);
-            textBox2.Location = new Point(402, 339);
+            textBox2.Location = new Point(402, 435);
             textBox2.Name = "textBox2";
             textBox2.Size = new Size(216, 32);
             textBox2.TabIndex = 1;
@@ -67,7 +67,7 @@
             label1.AutoSize = true;
             label1.Font = new Font("Segoe UI", 14F);
             label1.Image = Properties.Resources.form_background;
-            label1.Location = new Point(305, 290);
+            label1.Location = new Point(305, 386);
             label1.Name = "label1";
             label1.Size = new Size(97, 25);
             label1.TabIndex = 2;
@@ -78,7 +78,7 @@
             label2.AutoSize = true;
             label2.Font = new Font("Segoe UI", 14F);
             label2.Image = Properties.Resources.form_background;
-            label2.Location = new Point(305, 342);
+            label2.Location = new Point(305, 438);
             label2.Name = "label2";
             label2.Size = new Size(91, 25);
             label2.TabIndex = 3;
@@ -149,7 +149,7 @@
             label6.AutoSize = true;
             label6.Font = new Font("Segoe UI", 14F);
             label6.Image = Properties.Resources.form_background;
-            label6.Location = new Point(305, 438);
+            label6.Location = new Point(305, 332);
             label6.Name = "label6";
             label6.Size = new Size(46, 25);
             label6.TabIndex = 11;
@@ -158,7 +158,7 @@
             // textBox3
             // 
             textBox3.Font = new Font("Segoe UI", 14F);
-            textBox3.Location = new Point(402, 435);
+            textBox3.Location = new Point(402, 329);
             textBox3.Name = "textBox3";
             textBox3.Size = new Size(216, 32);
             textBox3.TabIndex = 10;
@@ -168,7 +168,7 @@
             label7.AutoSize = true;
             label7.Font = new Font("Segoe UI", 14F);
             label7.Image = Properties.Resources.form_background;
-            label7.Location = new Point(305, 393);
+            label7.Location = new Point(305, 278);
             label7.Name = "label7";
             label7.Size = new Size(86, 25);
             label7.TabIndex = 13;
@@ -177,7 +177,7 @@
             // textBox4
             // 
             textBox4.Font = new Font("Segoe UI", 14F);
-            textBox4.Location = new Point(402, 390);
+            textBox4.Location = new Point(402, 275);
             textBox4.Name = "textBox4";
             textBox4.Size = new Size(216, 32);
             textBox4.TabIndex = 12;
