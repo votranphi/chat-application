@@ -61,20 +61,18 @@ namespace Client
             // msgToSend
             // 
             msgToSend.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            msgToSend.Location = new Point(462, 585);
-            msgToSend.Multiline = true;
+            msgToSend.Location = new Point(462, 594);
             msgToSend.Name = "msgToSend";
-            msgToSend.Size = new Size(454, 50);
+            msgToSend.Size = new Size(454, 29);
             msgToSend.TabIndex = 0;
             msgToSend.KeyPress += msgToSend_KeyPress;
             // 
             // tbReceiver
             // 
             tbReceiver.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            tbReceiver.Location = new Point(272, 14);
-            tbReceiver.Multiline = true;
+            tbReceiver.Location = new Point(272, 19);
             tbReceiver.Name = "tbReceiver";
-            tbReceiver.Size = new Size(159, 50);
+            tbReceiver.Size = new Size(159, 29);
             tbReceiver.TabIndex = 2;
             // 
             // btnLogout
@@ -190,7 +188,7 @@ namespace Client
             emojiCB.FormattingEnabled = true;
             emojiCB.ItemHeight = 15;
             emojiCB.Items.AddRange(new object[] { "😁", "😂", "\U0001f923", "😅", "😆", "😍", "😘", "\U0001f970", "👍", "❤" });
-            emojiCB.Location = new Point(406, 585);
+            emojiCB.Location = new Point(406, 596);
             emojiCB.Name = "emojiCB";
             emojiCB.Size = new Size(50, 23);
             emojiCB.TabIndex = 14;
