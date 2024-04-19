@@ -1,6 +1,7 @@
 ﻿using System.Net.Sockets;
 using System.Net;
 using System.Net.Http;
+using Microsoft.VisualBasic.ApplicationServices;
 
 namespace Server
 {
@@ -14,6 +15,8 @@ namespace Server
         private Dictionary<string, TcpClient> CLIENT = new Dictionary<string, TcpClient>();
         // group's name to list of usernames
         private Dictionary<string, List<string>> GROUP = new Dictionary<string, List<string>>();
+        // username to his/her status (1 - online, 0 - offline)
+        private Dictionary<string, bool> STATUS = new Dictionary<string, bool>();
 
         private delegate void SafeCallDelegate(string text);
         private delegate void SafeCallDelegateImage(Bitmap bmp);
@@ -57,6 +60,21 @@ namespace Server
                         USER.Add(splitString[0], splitString[1]);
                         // add new username and TcpClient to CLIENT list
                         CLIENT.Add(splitString[0], _client);
+                        // add new username and his/her status to STATUS list
+                        STATUS.Add(splitString[0], true);
+
+                        // send new online user signal to other clients
+                        foreach (TcpClient tcpClient in CLIENT.Values)
+                        {
+                            if (_client != tcpClient)
+                            {
+                                StreamWriter _streamWriter = new StreamWriter(tcpClient.GetStream());
+                                _streamWriter.AutoFlush = true;
+                                _streamWriter.WriteLine("<User_Onl>");
+                                _streamWriter.WriteLine(splitString[0]);
+                            }
+                        }
+
                         // print the notifications to richtextbox
                         IPEndPoint remoteIpEndPoint = _client.Client.RemoteEndPoint as IPEndPoint; // use to get the client's IP and client's port
                         UpdateClientsStatusThreadSafe($"[{DateTime.Now}] {splitString[0]}({remoteIpEndPoint.Address}:{remoteIpEndPoint.Port}) has just signed up and logged in!\n");
@@ -66,6 +84,8 @@ namespace Server
                         receiveThread.IsBackground = true;
                     }
 
+                    sendOnlineUsernamesAndGroupnames(streamWriter);
+
                     continue;
                 }
 
@@ -73,20 +93,46 @@ namespace Server
                 if (msgFromClient == "<Login>")
                 {
                     string usernameAndPassword = streamReader.ReadLine();
+                    // splitString[0] is username, splitString[1] is password from new client
                     string[] splitString = usernameAndPassword.Split('|');
 
+                    // check if the user name is in USER list
                     if (USER.ContainsKey(splitString[0]))
                     {
+                        // check if the password is correct
                         if (USER[splitString[0]] == splitString[1])
                         {
-                            streamWriter.WriteLine("<Success>");
-                            // print the notifications to richtextbox
-                            IPEndPoint remoteIpEndPoint = _client.Client.RemoteEndPoint as IPEndPoint; // use to get the client's IP and client's port
-                            UpdateClientsStatusThreadSafe($"[{DateTime.Now}] {splitString[0]}({remoteIpEndPoint.Address}:{remoteIpEndPoint.Port}) has just logged in!\n");
-                            // new thread for the client has just logged in successfully
-                            Thread receiveThread = new Thread(new ThreadStart(() => receiveFromClient(splitString[0])));
-                            receiveThread.Start();
-                            receiveThread.IsBackground = true;
+                            // check if the user is inactive
+                            if (STATUS[splitString[0]] == false)
+                            {
+                                streamWriter.WriteLine("<Success>");
+                                // change the user's status in STATUS list to true
+                                STATUS[splitString[0]] = true;
+
+                                // send new online user signal to other clients
+                                foreach (TcpClient tcpClient in CLIENT.Values)
+                                {
+                                    if (_client != tcpClient)
+                                    {
+                                        StreamWriter _streamWriter = new StreamWriter(tcpClient.GetStream());
+                                        _streamWriter.AutoFlush = true;
+                                        _streamWriter.WriteLine("<User_Onl>");
+                                        _streamWriter.WriteLine(splitString[0]);
+                                    }
+                                }
+
+                                // print the notifications to richtextbox
+                                IPEndPoint remoteIpEndPoint = _client.Client.RemoteEndPoint as IPEndPoint; // use to get the client's IP and client's port
+                                UpdateClientsStatusThreadSafe($"[{DateTime.Now}] {splitString[0]}({remoteIpEndPoint.Address}:{remoteIpEndPoint.Port}) has just logged in!\n");
+                                // new thread for the client has just logged in successfully
+                                Thread receiveThread = new Thread(new ThreadStart(() => receiveFromClient(splitString[0])));
+                                receiveThread.Start();
+                                receiveThread.IsBackground = true;
+                            }
+                            else
+                            {
+                                streamWriter.WriteLine("<Unsuccess>");
+                            }
                         }
                         else
                         {
@@ -97,6 +143,8 @@ namespace Server
                     {
                         streamWriter.WriteLine("<Username_Not_Exist>");
                     }
+
+                    sendOnlineUsernamesAndGroupnames(streamWriter);
 
                     continue;
                 }
@@ -117,7 +165,23 @@ namespace Server
                 // solve the logout signal from client
                 if (msgFromClient == "<Logout>")
                 {
-                    IPEndPoint remoteIpEndPoint = _client.Client.RemoteEndPoint as IPEndPoint; // use to get the client's IP and client's port\
+                    // change the user's status in STATUS list to false
+                    STATUS[username] = false;
+
+                    // send new online user signal to other clients
+                    foreach (TcpClient tcpClient in CLIENT.Values)
+                    {
+                        if (_client != tcpClient)
+                        {
+                            StreamWriter _streamWriter = new StreamWriter(tcpClient.GetStream());
+                            _streamWriter.AutoFlush = true;
+                            _streamWriter.WriteLine("<User_Off>");
+                            _streamWriter.WriteLine(username);
+                        }
+                    }
+
+                    // use to get the client's IP and client's port
+                    IPEndPoint remoteIpEndPoint = _client.Client.RemoteEndPoint as IPEndPoint;
                     UpdateClientsStatusThreadSafe($"[{DateTime.Now}] {username}({remoteIpEndPoint.Address}:{remoteIpEndPoint.Port}) has just logged out!\n");
                     break;
                 }
@@ -131,6 +195,13 @@ namespace Server
                     string[] splitString = groupnameAndUsersname.Split('|');
                     string[] _username = splitString[1].Split(',');
 
+                    // check if the group's name exists
+                    if (GROUP.ContainsKey(splitString[0]))
+                    {
+                        streamWriter.WriteLine("<Group_Exists>");
+                        continue;
+                    }
+
                     // delete all leading and trailing white-spaces then add to userList
                     List<string> userList = new List<string>();
                     for (int i = 0; i < _username.Length; i++)
@@ -140,6 +211,17 @@ namespace Server
 
                     // finally, add all the things to the GROUP list
                     GROUP.Add(splitString[0], userList);
+
+                    // send new group creation signal to other clients (include the client who creates the group)
+                    foreach (string user in userList)
+                    {
+                        StreamWriter _streamWriter = new StreamWriter(CLIENT[user].GetStream());
+                        _streamWriter.AutoFlush = true;
+                        _streamWriter.WriteLine("<Group_Created>");
+                        _streamWriter.WriteLine(splitString[0]);
+                    }
+
+                    continue;
                 }
 
                 // solve the image signal from client
@@ -225,6 +307,8 @@ namespace Server
                     {
                         streamWriter.WriteLine("<UoG_Not_Exist>"); // User_Or_Group_Not_Exist
                     }
+
+                    continue;
                 }
             }
         }
@@ -248,6 +332,40 @@ namespace Server
                 statusAndMsg.Text += $"[{DateTime.Now}] Start listening with ip address {ipInput.Text} on port {portInput.Text}\n";
                 listenBtn.Text = "Stop";
             }
+        }
+
+        private void sendOnlineUsernamesAndGroupnames(StreamWriter streamWriter)
+        {
+            // send the online users and groups' name right after the client' connection
+            streamWriter.WriteLine("<UaG_Name>"); // User_And_Group_Name
+            string formatMsg = ""; // example format: "username1|username2|username3,groupname1|groupname2"
+            foreach (string user in USER.Keys)
+            {
+                if (STATUS[user] == true)
+                {
+                    if (user != USER.Keys.Last())
+                    {
+                        formatMsg += user + "|";
+                    }
+                    else
+                    {
+                        formatMsg += user;
+                    }
+                }
+            }
+            formatMsg += ",";
+            foreach (string group in GROUP.Keys)
+            {
+                if (group != GROUP.Keys.Last())
+                {
+                    formatMsg += group + "|";
+                }
+                else
+                {
+                    formatMsg += group;
+                }
+            }
+            streamWriter.WriteLine(formatMsg);
         }
 
         #region UpdateThreadSafe

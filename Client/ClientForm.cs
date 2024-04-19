@@ -13,7 +13,6 @@ namespace Client
         private StreamWriter streamWriter;
         private StreamReader streamReader;
         private delegate void SafeCallDelegate(string text);
-        private delegate void SafeCallDelegateImage(Bitmap bmp);
 
         public ClientForm(TcpClient tcpClient, string username)
         {
@@ -42,6 +41,23 @@ namespace Client
             while (isClientRunning)
             {
                 string msgFromServer = streamReader.ReadLine();
+
+                // receive the online usernames and groupnames then update it to DataGridView
+                if (msgFromServer == "<UaG_Name>")
+                {
+                    string formatMsg = streamReader.ReadLine();
+                    string usernames = formatMsg.Split(',')[0];
+                    string groupnames = formatMsg.Split(',')[1];
+
+                    foreach (string user in usernames.Split('|'))
+                    {
+                        UpdateOnlineUserDataGridViewThreadSafe(user);
+                    }
+                    foreach (string group in groupnames.Split('|'))
+                    {
+                        UpdateGroupDataGridViewThreadSafe(group);
+                    }
+                }
 
                 // receive messages from other clients
                 if (msgFromServer == "<Message>")
@@ -72,6 +88,37 @@ namespace Client
                     // update the received message to the RichTextBox
                     AppendRichTextBox(sender, username, "Sent you a picture.", "");
 
+                    continue;
+                }
+
+                // update the online user data grid view if a user logged in or signed up
+                if (msgFromServer == "<User_Onl>")
+                {
+                    string onlineUsername = streamReader.ReadLine();
+                    UpdateOnlineUserDataGridViewThreadSafe(onlineUsername);
+                    continue;
+                }
+
+                // update the online user data grid view if a user logged out
+                if (msgFromServer == "<User_Off>")
+                {
+                    string offlineUsername = streamReader.ReadLine();
+                    UpdateOfflineUserDataGridViewThreadSafe(offlineUsername);
+                    continue;
+                }
+
+                // update the group data grid view if a group is created
+                if (msgFromServer == "<Group_Created>")
+                {
+                    string groupName = streamReader.ReadLine();
+                    UpdateGroupDataGridViewThreadSafe(groupName);
+                    continue;
+                }
+
+                // 
+                if (msgFromServer == "<Group_Exists>")
+                {
+                    MessageBox.Show("Group existed!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     continue;
                 }
 
@@ -212,23 +259,49 @@ namespace Client
 
         #region UpdateThreadSafe
 
-        private void UpdateImageThreadSafe(Bitmap bmp)
+        private void UpdateOnlineUserDataGridViewThreadSafe(string text)
         {
             if (statusAndMsg.InvokeRequired)
             {
-                var d = new SafeCallDelegateImage(UpdateImageThreadSafe);
-                statusAndMsg.Invoke(d, new object[] { bmp });
+                var d = new SafeCallDelegate(UpdateOnlineUserDataGridViewThreadSafe);
+                dgvUser.Invoke(d, new object[] { text });
             }
             else
             {
-                statusAndMsg.Text += "\n";
-                // move cursor to the end of the RTB
-                statusAndMsg.Select(statusAndMsg.Text.Length - 1, 0);
-                // scroll to cursor the RTB
-                statusAndMsg.ScrollToCaret();
+                dgvUser.Rows.Add(text);
+            }
+        }
 
-                Clipboard.SetDataObject(bmp);
-                statusAndMsg.Paste();
+        private void UpdateOfflineUserDataGridViewThreadSafe(string text)
+        {
+            if (statusAndMsg.InvokeRequired)
+            {
+                var d = new SafeCallDelegate(UpdateOfflineUserDataGridViewThreadSafe);
+                dgvUser.Invoke(d, new object[] { text });
+            }
+            else
+            {
+                foreach (DataGridViewRow row in dgvUser.Rows)
+                {
+                    if (row.Cells[0].Value.ToString() == text)
+                    {
+                        dgvUser.Rows.Remove(row);
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void UpdateGroupDataGridViewThreadSafe(string text)
+        {
+            if (statusAndMsg.InvokeRequired)
+            {
+                var d = new SafeCallDelegate(UpdateGroupDataGridViewThreadSafe);
+                dgvGroup.Invoke(d, new object[] { text });
+            }
+            else
+            {
+                dgvGroup.Rows.Add(text);
             }
         }
 

@@ -114,6 +114,8 @@ namespace Client
             Controls.Add(btnClose);
             Controls.Add(btnDownload);
             Controls.Add(pb);
+            MaximumSize = new Size(600, 600);
+            MinimumSize = new Size(600, 600);
             Name = "ImageViewForm";
             Text = "ImageViewForm";
             Load += ImageViewForm_Load;

@@ -44,6 +44,11 @@ namespace Client
                 MessageBox.Show("Username doesn't exist! Please sign up!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+            if (msgFromServer == "<Unsuccess>")
+            {
+                MessageBox.Show("Your account has been accessed from another device!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             if (msgFromServer == "<Success>")
             {
                 Thread clientFormThread = new Thread(() => Application.Run(new ClientForm(tcpClient, username)));

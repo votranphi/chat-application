@@ -62,6 +62,7 @@ namespace Client
             tbPassword.Name = "tbPassword";
             tbPassword.Size = new Size(216, 32);
             tbPassword.TabIndex = 3;
+            tbPassword.PasswordChar = '*';
             // 
             // label1
             // 
@@ -175,6 +176,7 @@ namespace Client
             tbPassConf.Name = "tbPassConf";
             tbPassConf.Size = new Size(216, 32);
             tbPassConf.TabIndex = 4;
+            tbPassConf.PasswordChar = '*';
             // 
             // SignUpForm
             // 

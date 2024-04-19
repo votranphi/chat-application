@@ -63,6 +63,7 @@ namespace Client
             tbPassword.Name = "tbPassword";
             tbPassword.Size = new Size(216, 32);
             tbPassword.TabIndex = 3;
+            tbPassword.PasswordChar = '*';
             // 
             // label1
             // 

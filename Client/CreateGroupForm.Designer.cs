@@ -123,6 +123,8 @@ namespace Client
             Controls.Add(label3);
             Controls.Add(label2);
             Controls.Add(label1);
+            MaximumSize = new Size(600, 600);
+            MinimumSize = new Size(600, 600);
             Name = "CreateGroupForm";
             Text = "CreateGroupForm";
             ResumeLayout(false);

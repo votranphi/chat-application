@@ -100,6 +100,8 @@
             Controls.Add(label2);
             Controls.Add(ipInput);
             Controls.Add(label1);
+            MaximumSize = new Size(475, 297);
+            MinimumSize = new Size(475, 297);
             Name = "ServerForm";
             Text = "ServerForm";
             ResumeLayout(false);

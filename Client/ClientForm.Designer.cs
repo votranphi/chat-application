@@ -34,8 +34,6 @@ namespace Client
         {
             msgToSend = new TextBox();
             tbReceiver = new TextBox();
-            lvUser = new ListView();
-            lvGroup = new ListView();
             btnLogout = new Button();
             btnCreateGroup = new Button();
             pictureBox1 = new PictureBox();
@@ -46,12 +44,18 @@ namespace Client
             imageBtn = new PictureBox();
             btnVoice = new PictureBox();
             emojiCB = new ComboBox();
+            dgvUser = new DataGridView();
+            dgvGroup = new DataGridView();
+            _username = new DataGridViewTextBoxColumn();
+            groupsName = new DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
             ((System.ComponentModel.ISupportInitialize)sendBtn).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox4).BeginInit();
             ((System.ComponentModel.ISupportInitialize)imageBtn).BeginInit();
             ((System.ComponentModel.ISupportInitialize)btnVoice).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dgvUser).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dgvGroup).BeginInit();
             SuspendLayout();
             // 
             // msgToSend
@@ -72,22 +76,6 @@ namespace Client
             tbReceiver.Name = "tbReceiver";
             tbReceiver.Size = new Size(159, 50);
             tbReceiver.TabIndex = 2;
-            // 
-            // lvUser
-            // 
-            lvUser.Location = new Point(4, 14);
-            lvUser.Name = "lvUser";
-            lvUser.Size = new Size(262, 288);
-            lvUser.TabIndex = 4;
-            lvUser.UseCompatibleStateImageBehavior = false;
-            // 
-            // lvGroup
-            // 
-            lvGroup.Location = new Point(4, 346);
-            lvGroup.Name = "lvGroup";
-            lvGroup.Size = new Size(262, 289);
-            lvGroup.TabIndex = 5;
-            lvGroup.UseCompatibleStateImageBehavior = false;
             // 
             // btnLogout
             // 
@@ -208,6 +196,40 @@ namespace Client
             emojiCB.TabIndex = 14;
             emojiCB.SelectedIndexChanged += emojiCB_SelectedIndexChanged;
             // 
+            // dgvUser
+            // 
+            dgvUser.BackgroundColor = Color.White;
+            dgvUser.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvUser.Columns.AddRange(new DataGridViewColumn[] { _username });
+            dgvUser.Location = new Point(12, 19);
+            dgvUser.Name = "dgvUser";
+            dgvUser.RowTemplate.Height = 25;
+            dgvUser.Size = new Size(254, 283);
+            dgvUser.TabIndex = 15;
+            // 
+            // dgvGroup
+            // 
+            dgvGroup.BackgroundColor = Color.White;
+            dgvGroup.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvGroup.Columns.AddRange(new DataGridViewColumn[] { groupsName });
+            dgvGroup.Location = new Point(12, 356);
+            dgvGroup.Name = "dgvGroup";
+            dgvGroup.RowTemplate.Height = 25;
+            dgvGroup.Size = new Size(254, 283);
+            dgvGroup.TabIndex = 15;
+            // 
+            // _username
+            // 
+            _username.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            _username.HeaderText = "Username";
+            _username.Name = "_username";
+            // 
+            // groupsName
+            // 
+            groupsName.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            groupsName.HeaderText = "Group's name";
+            groupsName.Name = "groupsName";
+            // 
             // ClientForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -216,6 +238,8 @@ namespace Client
             BackgroundImage = Properties.Resources.form_background;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(984, 661);
+            Controls.Add(dgvGroup);
+            Controls.Add(dgvUser);
             Controls.Add(emojiCB);
             Controls.Add(btnVoice);
             Controls.Add(imageBtn);
@@ -225,8 +249,6 @@ namespace Client
             Controls.Add(pictureBox1);
             Controls.Add(btnCreateGroup);
             Controls.Add(btnLogout);
-            Controls.Add(lvGroup);
-            Controls.Add(lvUser);
             Controls.Add(tbReceiver);
             Controls.Add(msgToSend);
             Controls.Add(pictureBox4);
@@ -239,6 +261,8 @@ namespace Client
             ((System.ComponentModel.ISupportInitialize)pictureBox4).EndInit();
             ((System.ComponentModel.ISupportInitialize)imageBtn).EndInit();
             ((System.ComponentModel.ISupportInitialize)btnVoice).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dgvUser).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dgvGroup).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -246,8 +270,6 @@ namespace Client
         #endregion
         private TextBox msgToSend;
         private TextBox tbReceiver;
-        private ListView lvUser;
-        private ListView lvGroup;
         private Button btnLogout;
         private Button btnCreateGroup;
         private PictureBox pictureBox1;
@@ -258,5 +280,9 @@ namespace Client
         private PictureBox imageBtn;
         private PictureBox btnVoice;
         private ComboBox emojiCB;
+        private DataGridView dgvUser;
+        private DataGridView dgvGroup;
+        private DataGridViewTextBoxColumn _username;
+        private DataGridViewTextBoxColumn groupsName;
     }
 }
