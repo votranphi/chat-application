@@ -221,6 +221,9 @@ namespace Server
                         _streamWriter.WriteLine(splitString[0]);
                     }
 
+                    // update group's creation to status RTB
+                    UpdateClientsStatusThreadSafe($"[{DateTime.Now}] {splitString[0]} group has been created with users: {splitString[1]}!\n");
+
                     continue;
                 }
 

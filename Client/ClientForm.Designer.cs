@@ -45,8 +45,8 @@ namespace Client
             btnVoice = new PictureBox();
             emojiCB = new ComboBox();
             dgvUser = new DataGridView();
-            dgvGroup = new DataGridView();
             _username = new DataGridViewTextBoxColumn();
+            dgvGroup = new DataGridView();
             groupsName = new DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
@@ -206,6 +206,13 @@ namespace Client
             dgvUser.RowTemplate.Height = 25;
             dgvUser.Size = new Size(254, 283);
             dgvUser.TabIndex = 15;
+            dgvUser.SelectionChanged += dgvUser_SelectionChanged;
+            // 
+            // _username
+            // 
+            _username.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            _username.HeaderText = "Username";
+            _username.Name = "_username";
             // 
             // dgvGroup
             // 
@@ -217,12 +224,7 @@ namespace Client
             dgvGroup.RowTemplate.Height = 25;
             dgvGroup.Size = new Size(254, 283);
             dgvGroup.TabIndex = 15;
-            // 
-            // _username
-            // 
-            _username.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            _username.HeaderText = "Username";
-            _username.Name = "_username";
+            dgvGroup.SelectionChanged += dgvGroup_SelectionChanged;
             // 
             // groupsName
             // 

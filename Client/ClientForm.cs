@@ -213,6 +213,24 @@ namespace Client
             new Thread(() => Application.Run(new CreateGroupForm(tcpClient, username))).Start();
         }
 
+        private void dgvUser_SelectionChanged(object sender, EventArgs e)
+        {
+            if (dgvUser.SelectedCells.Count == 1)
+            {
+                tbReceiver.Text = dgvUser.SelectedCells[0].Value.ToString();
+            }
+            dgvGroup.ClearSelection();
+        }
+
+        private void dgvGroup_SelectionChanged(object sender, EventArgs e)
+        {
+            if (dgvGroup.SelectedCells.Count == 1)
+            {
+                tbReceiver.Text = dgvGroup.SelectedCells[0].Value.ToString();
+            }
+            dgvUser.ClearSelection();
+        }
+
         // the method use to format the message then update it to RichTextBox
         // source: https://github.com/trinhvinhphuc/Chat-app/blob/master/Chat-app%20Client/ChatBox.cs
         private void AppendRichTextBox(string sender, string receiver, string message, string link)
