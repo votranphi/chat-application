@@ -38,5 +38,10 @@ namespace Client
         {
             this.Close();
         }
+
+        private void btnDownload_Click(object sender, EventArgs e)
+        {
+            // download the file to a specified directory
+        }
     }
 }

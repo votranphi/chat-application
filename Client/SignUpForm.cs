@@ -59,9 +59,15 @@ namespace Client
         private void btnSignUp_Click(object sender, EventArgs e)
         {
             // exceptions catching
-            if (tbUsername.Text == "" || tbPassword.Text == "" || tbServerIP.Text == "" || tbPort.Text == "")
+            if (tbUsername.Text == "" || tbPassword.Text == "" || tbServerIP.Text == "" || tbPort.Text == "" || tbPassConf.Text == "")
             {
                 MessageBox.Show("Empty Fields!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (tbPassConf.Text != tbPassword.Text)
+            {
+                MessageBox.Show("The password confirmation does not match!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
