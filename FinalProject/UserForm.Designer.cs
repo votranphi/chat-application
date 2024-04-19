@@ -42,6 +42,7 @@ namespace FinalProject
             pictureBox4 = new PictureBox();
             pictureBox5 = new PictureBox();
             pictureBox6 = new PictureBox();
+            comboBox1 = new ComboBox();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox3).BeginInit();
@@ -53,10 +54,10 @@ namespace FinalProject
             // textBox2
             // 
             textBox2.Font = new Font("Segoe UI", 12F);
-            textBox2.Location = new Point(406, 585);
+            textBox2.Location = new Point(462, 585);
             textBox2.Multiline = true;
             textBox2.Name = "textBox2";
-            textBox2.Size = new Size(510, 50);
+            textBox2.Size = new Size(454, 50);
             textBox2.TabIndex = 0;
             textBox2.Text = "Type something...";
             // 
@@ -184,6 +185,16 @@ namespace FinalProject
             pictureBox6.TabIndex = 13;
             pictureBox6.TabStop = false;
             // 
+            // comboBox1
+            // 
+            comboBox1.AllowDrop = true;
+            comboBox1.FormattingEnabled = true;
+            comboBox1.ItemHeight = 15;
+            comboBox1.Location = new Point(406, 585);
+            comboBox1.Name = "comboBox1";
+            comboBox1.Size = new Size(50, 23);
+            comboBox1.TabIndex = 14;
+            // 
             // UserForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -192,6 +203,7 @@ namespace FinalProject
             BackgroundImage = Properties.Resources.form_background;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(984, 661);
+            Controls.Add(comboBox1);
             Controls.Add(pictureBox6);
             Controls.Add(pictureBox5);
             Controls.Add(richTextBox1);
@@ -231,5 +243,6 @@ namespace FinalProject
         private PictureBox pictureBox4;
         private PictureBox pictureBox5;
         private PictureBox pictureBox6;
+        private ComboBox comboBox1;
     }
 }

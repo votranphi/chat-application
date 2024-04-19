@@ -97,13 +97,14 @@
             // 
             // button1
             // 
+            button1.BackColor = SystemColors.Highlight;
             button1.Font = new Font("Segoe UI", 14F);
             button1.Location = new Point(271, 297);
             button1.Name = "button1";
             button1.Size = new Size(152, 40);
             button1.TabIndex = 6;
             button1.Text = "Create";
-            button1.UseVisualStyleBackColor = true;
+            button1.UseVisualStyleBackColor = false;
             // 
             // CreateGroupForm
             // 

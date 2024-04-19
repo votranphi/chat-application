@@ -98,6 +98,7 @@
             // button1
             // 
             button1.BackColor = SystemColors.Highlight;
+            button1.Font = new Font("Segoe UI", 14F);
             button1.Location = new Point(402, 488);
             button1.Name = "button1";
             button1.Size = new Size(216, 40);
@@ -127,6 +128,7 @@
             // button2
             // 
             button2.BackColor = SystemColors.Highlight;
+            button2.Font = new Font("Segoe UI", 14F);
             button2.Location = new Point(450, 556);
             button2.Name = "button2";
             button2.Size = new Size(120, 40);
@@ -137,10 +139,11 @@
             // label5
             // 
             label5.AutoSize = true;
+            label5.Font = new Font("Segoe UI", 12F);
             label5.Image = Properties.Resources.form_background;
-            label5.Location = new Point(424, 599);
+            label5.Location = new Point(392, 599);
             label5.Name = "label5";
-            label5.Size = new Size(174, 15);
+            label5.Size = new Size(228, 21);
             label5.TabIndex = 9;
             label5.Text = "Create an account if you're new";
             // 
