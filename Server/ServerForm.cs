@@ -64,11 +64,11 @@ namespace Server
                         STATUS.Add(splitString[0], true);
 
                         // send new online user signal to other clients
-                        foreach (TcpClient tcpClient in CLIENT.Values)
+                        foreach (string user in USER.Keys)
                         {
-                            if (_client != tcpClient)
+                            if (user != splitString[0] && STATUS[user] == true)
                             {
-                                StreamWriter _streamWriter = new StreamWriter(tcpClient.GetStream());
+                                StreamWriter _streamWriter = new StreamWriter(CLIENT[user].GetStream());
                                 _streamWriter.AutoFlush = true;
                                 _streamWriter.WriteLine("<User_Onl>");
                                 _streamWriter.WriteLine(splitString[0]);
@@ -110,11 +110,11 @@ namespace Server
                                 STATUS[splitString[0]] = true;
 
                                 // send new online user signal to other clients
-                                foreach (TcpClient tcpClient in CLIENT.Values)
+                                foreach (string user in USER.Keys)
                                 {
-                                    if (CLIENT[splitString[0]] != tcpClient)
+                                    if (user != splitString[0] && STATUS[user] == true)
                                     {
-                                        StreamWriter _streamWriter = new StreamWriter(tcpClient.GetStream());
+                                        StreamWriter _streamWriter = new StreamWriter(CLIENT[user].GetStream());
                                         _streamWriter.AutoFlush = true;
                                         _streamWriter.WriteLine("<User_Onl>");
                                         _streamWriter.WriteLine(splitString[0]);
@@ -169,11 +169,11 @@ namespace Server
                     STATUS[username] = false;
 
                     // send new online user signal to other clients
-                    foreach (TcpClient tcpClient in CLIENT.Values)
+                    foreach (string user in USER.Keys)
                     {
-                        if (_client != tcpClient)
+                        if (user != username && STATUS[user] == true)
                         {
-                            StreamWriter _streamWriter = new StreamWriter(tcpClient.GetStream());
+                            StreamWriter _streamWriter = new StreamWriter(CLIENT[user].GetStream());
                             _streamWriter.AutoFlush = true;
                             _streamWriter.WriteLine("<User_Off>");
                             _streamWriter.WriteLine(username);
@@ -215,10 +215,13 @@ namespace Server
                     // send new group creation signal to other clients (include the client who creates the group)
                     foreach (string user in userList)
                     {
-                        StreamWriter _streamWriter = new StreamWriter(CLIENT[user].GetStream());
-                        _streamWriter.AutoFlush = true;
-                        _streamWriter.WriteLine("<Group_Created>");
-                        _streamWriter.WriteLine(splitString[0]);
+                        if (STATUS[user] == true)
+                        {
+                            StreamWriter _streamWriter = new StreamWriter(CLIENT[user].GetStream());
+                            _streamWriter.AutoFlush = true;
+                            _streamWriter.WriteLine("<Group_Created>");
+                            _streamWriter.WriteLine(splitString[0]);
+                        }
                     }
 
                     // update group's creation to status RTB
@@ -237,7 +240,7 @@ namespace Server
                     // maximum size of image is 524288 bytes
                     byte[] bytes = new byte[524288];
                     // wait for client side to complete writing data
-                    streamReader.BaseStream.Read(bytes, 0, bytes.Length);
+                    streamReader.BaseStream.ReadAsync(bytes, 0, bytes.Length);
 
                     // if receiver's name is in CLIENT list, then do sending the message to it
                     if (CLIENT.ContainsKey(splitString[1]))
@@ -246,7 +249,7 @@ namespace Server
                         receiverSW.AutoFlush = true;
                         receiverSW.WriteLine("<Image>");
                         receiverSW.WriteLine(splitString[0]);
-                        receiverSW.BaseStream.Write(bytes, 0, bytes.Length);
+                        receiverSW.BaseStream.WriteAsync(bytes, 0, bytes.Length);
                     }
                     else
                     // if group's name is in GROUP list, then do sending the message to users in it
@@ -256,13 +259,13 @@ namespace Server
                         foreach (string user in usersInGroup)
                         {
                             // only send if the... it's hard to say...
-                            if (_client != CLIENT[user])
+                            if (_client != CLIENT[user] && STATUS[user] == true)
                             {
                                 StreamWriter receiverSW = new StreamWriter(CLIENT[user].GetStream());
                                 receiverSW.AutoFlush = true;
                                 receiverSW.WriteLine("<Image>");
                                 receiverSW.WriteLine(splitString[0]);
-                                receiverSW.BaseStream.Write(bytes, 0, bytes.Length);
+                                receiverSW.BaseStream.WriteAsync(bytes, 0, bytes.Length);
                             }
                         }
                     }
@@ -297,7 +300,7 @@ namespace Server
                         foreach (string user in usersInGroup)
                         {
                             // only send if the... it's hard to say...
-                            if (_client != CLIENT[user])
+                            if (_client != CLIENT[user] && STATUS[user] == true)
                             {
                                 StreamWriter receiverSW = new StreamWriter(CLIENT[user].GetStream());
                                 receiverSW.AutoFlush = true;
@@ -323,7 +326,7 @@ namespace Server
             {
                 isServerRunning = false;
                 tcpListener.Stop();
-                statusAndMsg.Text += $"[{DateTime.Now}] Stop listening with ip address {ipInput.Text} on port {portInput.Text}\n";
+                statusAndMsg.Text += $"[{DateTime.Now}] Stop listening on port {portInput.Text}\n";
                 listenBtn.Text = "Listen";
             }
             else
@@ -332,7 +335,7 @@ namespace Server
                 Thread listenThread = new Thread(this.listen);
                 listenThread.Start();
                 listenThread.IsBackground = true;
-                statusAndMsg.Text += $"[{DateTime.Now}] Start listening with ip address {ipInput.Text} on port {portInput.Text}\n";
+                statusAndMsg.Text += $"[{DateTime.Now}] Start listening on port {portInput.Text}\n";
                 listenBtn.Text = "Stop";
             }
         }

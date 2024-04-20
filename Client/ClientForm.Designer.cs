@@ -142,6 +142,7 @@ namespace Client
             // 
             // statusAndMsg
             // 
+            statusAndMsg.Font = new Font("Segoe UI", 15F, FontStyle.Regular, GraphicsUnit.Point);
             statusAndMsg.Location = new Point(272, 70);
             statusAndMsg.Name = "statusAndMsg";
             statusAndMsg.Size = new Size(700, 500);
@@ -196,6 +197,10 @@ namespace Client
             // 
             // dgvUser
             // 
+            dgvUser.AllowUserToAddRows = false;
+            dgvUser.AllowUserToDeleteRows = false;
+            dgvUser.AllowUserToResizeColumns = false;
+            dgvUser.AllowUserToResizeRows = false;
             dgvUser.BackgroundColor = Color.White;
             dgvUser.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgvUser.Columns.AddRange(new DataGridViewColumn[] { _username });
@@ -214,6 +219,10 @@ namespace Client
             // 
             // dgvGroup
             // 
+            dgvGroup.AllowUserToAddRows = false;
+            dgvGroup.AllowUserToDeleteRows = false;
+            dgvGroup.AllowUserToResizeColumns = false;
+            dgvGroup.AllowUserToResizeRows = false;
             dgvGroup.BackgroundColor = Color.White;
             dgvGroup.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgvGroup.Columns.AddRange(new DataGridViewColumn[] { groupsName });

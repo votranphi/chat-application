@@ -86,7 +86,7 @@ namespace Client
 
                     string sender = streamReader.ReadLine();
 
-                    streamReader.BaseStream.Read(bytes, 0, bytes.Length);
+                    streamReader.BaseStream.ReadAsync(bytes, 0, bytes.Length);
 
                     // create a new ImageViewForm to display the picture
                     new Thread(() => Application.Run(new ImageViewForm(bytes, username))).Start();
@@ -160,6 +160,11 @@ namespace Client
                 MessageBox.Show("Cannot send message to yourself!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+            if (tbReceiver.Text == "")
+            {
+                MessageBox.Show("Please select an user or a group!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
             // implementation
             streamWriter.WriteLine("<Message>");
@@ -198,7 +203,7 @@ namespace Client
                 // send the signal message and byte array to server
                 streamWriter.WriteLine("<Image>");
                 streamWriter.WriteLine($"{username}|{tbReceiver.Text}");
-                streamWriter.BaseStream.Write(bytes, 0, bytes.Length);
+                streamWriter.BaseStream.WriteAsync(bytes, 0, bytes.Length);
             }
         }
 
@@ -309,7 +314,7 @@ namespace Client
                 {
                     if (row.Cells[0].Value.ToString() == text)
                     {
-                        dgvUser.Rows.Remove(row);
+                        dgvUser.Rows.RemoveAt(row.Index);
                         break;
                     }
                 }
