@@ -24,7 +24,7 @@ namespace Client
             this.fileName = fileName;
             this.fileExtension = fileExtension;
             InitializeComponent();
-            this.Text = $"{username}'s ImageViewForm";
+            this.Text = $"{username}'s FileViewForm";
         }
 
         private void FileViewForm_Load(object sender, EventArgs e)
