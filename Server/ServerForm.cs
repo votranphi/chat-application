@@ -235,9 +235,10 @@ namespace Server
                 // solve the image signal from client
                 if (msgFromClient == "<Image>")
                 {
-                    string senderAndReceiver = streamReader.ReadLine();
+                    string senderAndReceiverAndFilenameAndFileExtension = streamReader.ReadLine();
                     // splitString[0] is sender's username, splitString[1] is receiver's username or group's name
-                    string[] splitString = senderAndReceiver.Split('|');
+                    // splitString[2] is file's name, splitString[3] is file's extension
+                    string[] splitString = senderAndReceiverAndFilenameAndFileExtension.Split('|');
 
                     // maximum size of image is 524288 bytes
                     byte[] bytes = new byte[524288];
@@ -250,7 +251,7 @@ namespace Server
                         StreamWriter receiverSW = new StreamWriter(CLIENT[splitString[1]].GetStream());
                         receiverSW.AutoFlush = true;
                         receiverSW.WriteLine("<Image>");
-                        receiverSW.WriteLine(splitString[0]);
+                        receiverSW.WriteLine($"{splitString[0]}|{splitString[2]}|{splitString[3]}");
                         new Thread(() =>
                         {
                             receiverSW.BaseStream.Write(bytes, 0, bytes.Length);
@@ -269,17 +270,13 @@ namespace Server
                                 StreamWriter receiverSW = new StreamWriter(CLIENT[user].GetStream());
                                 receiverSW.AutoFlush = true;
                                 receiverSW.WriteLine("<Image>");
-                                receiverSW.WriteLine(splitString[0]);
+                                receiverSW.WriteLine($"{splitString[0]}|{splitString[2]}|{splitString[3]}");
                                 new Thread(() =>
                                 {
                                     receiverSW.BaseStream.Write(bytes, 0, bytes.Length);
                                 }).Start();
                             }
                         }
-                    }
-                    else
-                    {
-                        streamWriter.WriteLine("<UoG_Not_Exist>"); // User_Or_Group_Not_Exist
                     }
 
                     continue;
@@ -316,10 +313,6 @@ namespace Server
                                 receiverSW.WriteLine(senderAndReceiverAndMsg);
                             }
                         }
-                    }
-                    else
-                    {
-                        streamWriter.WriteLine("<UoG_Not_Exist>"); // User_Or_Group_Not_Exist
                     }
 
                     continue;

@@ -13,8 +13,8 @@ namespace Client
 {
     public partial class CreateGroupForm : Form
     {
-        TcpClient tcpClient;
-        string username;
+        private TcpClient tcpClient;
+        private string username;
 
         public CreateGroupForm(TcpClient tcpClient, string username)
         {

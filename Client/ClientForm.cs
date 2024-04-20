@@ -88,15 +88,17 @@ namespace Client
                     // maximum size of image is 524288 bytes
                     byte[] bytes = new byte[524288];
 
-                    string sender = streamReader.ReadLine();
+                    string senderAndFilenameAndFileExtension = streamReader.ReadLine();
+                    // splitString[0] is sender's name, splitString[1] is file's name, splitString[2] is file's extension
+                    string[] splitString = senderAndFilenameAndFileExtension.Split('|');
 
                     streamReader.BaseStream.Read(bytes, 0, bytes.Length);
 
                     // create a new ImageViewForm to display the picture
-                    new Thread(() => Application.Run(new ImageViewForm(bytes, username))).Start();
+                    new Thread(() => Application.Run(new ImageViewForm(bytes, username, splitString[1], splitString[2]))).Start();
 
                     // update the received message to the RichTextBox
-                    AppendRichTextBox(sender, username, "Sent you a picture.", "");
+                    AppendRichTextBox(splitString[0], username, "Sent you a picture.", "");
 
                     continue;
                 }
@@ -129,13 +131,6 @@ namespace Client
                 if (msgFromServer == "<Group_Exists>")
                 {
                     MessageBox.Show("Group existed!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    continue;
-                }
-
-                // username or group's name doesn't exist!
-                if (msgFromServer == "<UoG_Not_Exist>")
-                {
-                    MessageBox.Show("Username or group's name doesn't exist!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     continue;
                 }
             }
@@ -199,14 +194,12 @@ namespace Client
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 // convert image from OFD to byte array (image file to base64String)
-                Image image = Image.FromFile(ofd.FileName);
-                var ms = new MemoryStream();
-                image.Save(ms, image.RawFormat);
-                byte[] bytes = ms.ToArray();
+                byte[] bytes = File.ReadAllBytes(ofd.FileName);
+                FileInfo fi = new FileInfo(ofd.FileName);
 
                 // send the signal message and byte array to server
                 streamWriter.WriteLine("<Image>");
-                streamWriter.WriteLine($"{username}|{tbReceiver.Text}");
+                streamWriter.WriteLine($"{username}|{tbReceiver.Text}|{fi.Name}|{fi.Extension}");
 
                 new Thread(() =>
                 {
