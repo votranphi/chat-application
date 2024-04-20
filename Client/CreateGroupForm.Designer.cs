@@ -36,9 +36,10 @@ namespace Client
             label2 = new Label();
             label3 = new Label();
             tbGroupName = new TextBox();
-            label4 = new Label();
             btnCreate = new Button();
             tbUsersname = new TextBox();
+            label5 = new Label();
+            label6 = new Label();
             SuspendLayout();
             // 
             // label1
@@ -79,15 +80,6 @@ namespace Client
             tbGroupName.Size = new Size(260, 32);
             tbGroupName.TabIndex = 0;
             // 
-            // label4
-            // 
-            label4.AutoSize = true;
-            label4.Font = new Font("Segoe UI", 14F, FontStyle.Regular, GraphicsUnit.Point);
-            label4.Location = new Point(22, 452);
-            label4.Name = "label4";
-            label4.Size = new Size(0, 25);
-            label4.TabIndex = 5;
-            // 
             // btnCreate
             // 
             btnCreate.BackColor = SystemColors.Highlight;
@@ -109,6 +101,26 @@ namespace Client
             tbUsersname.Size = new Size(260, 32);
             tbUsersname.TabIndex = 1;
             // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Font = new Font("Segoe UI", 14F, FontStyle.Regular, GraphicsUnit.Point);
+            label5.Location = new Point(22, 452);
+            label5.Name = "label5";
+            label5.Size = new Size(532, 25);
+            label5.TabIndex = 1;
+            label5.Text = "Rule1: Every two usernames should be separated by a comma.";
+            // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Font = new Font("Segoe UI", 14F, FontStyle.Regular, GraphicsUnit.Point);
+            label6.Location = new Point(22, 490);
+            label6.Name = "label6";
+            label6.Size = new Size(286, 25);
+            label6.TabIndex = 1;
+            label6.Text = "Rule2: Enter your username also.";
+            // 
             // CreateGroupForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -117,10 +129,11 @@ namespace Client
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(584, 561);
             Controls.Add(btnCreate);
-            Controls.Add(label4);
             Controls.Add(tbUsersname);
             Controls.Add(tbGroupName);
             Controls.Add(label3);
+            Controls.Add(label6);
+            Controls.Add(label5);
             Controls.Add(label2);
             Controls.Add(label1);
             MaximumSize = new Size(600, 600);
@@ -137,8 +150,9 @@ namespace Client
         private Label label2;
         private Label label3;
         private TextBox tbGroupName;
-        private Label label4;
         private Button btnCreate;
         private TextBox tbUsersname;
+        private Label label5;
+        private Label label6;
     }
 }

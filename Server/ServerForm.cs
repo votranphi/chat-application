@@ -11,7 +11,7 @@ namespace Server
         private bool isServerRunning = false;
         // username to its password
         private Dictionary<string, string> USER = new Dictionary<string, string>();
-        // username to TcpClient
+        // username to its TcpClient
         private Dictionary<string, TcpClient> CLIENT = new Dictionary<string, TcpClient>();
         // group's name to list of usernames
         private Dictionary<string, List<string>> GROUP = new Dictionary<string, List<string>>();
@@ -26,6 +26,7 @@ namespace Server
             InitializeComponent();
         }
 
+        // lang nghe coi co TCPclient nao ket noi toi khong
         private void listen()
         {
             tcpListener = new TcpListener(new IPEndPoint(IPAddress.Any, int.Parse(portInput.Text)));
@@ -151,6 +152,7 @@ namespace Server
             }
         }
 
+        // lang nghe du lieu tu mot client cu the
         private void receiveFromClient(string username)
         {
             TcpClient _client = CLIENT[username];
@@ -240,7 +242,7 @@ namespace Server
                     // maximum size of image is 524288 bytes
                     byte[] bytes = new byte[524288];
                     // wait for client side to complete writing data
-                    streamReader.BaseStream.ReadAsync(bytes, 0, bytes.Length);
+                    streamReader.BaseStream.Read(bytes, 0, bytes.Length);
 
                     // if receiver's name is in CLIENT list, then do sending the message to it
                     if (CLIENT.ContainsKey(splitString[1]))
@@ -249,7 +251,10 @@ namespace Server
                         receiverSW.AutoFlush = true;
                         receiverSW.WriteLine("<Image>");
                         receiverSW.WriteLine(splitString[0]);
-                        receiverSW.BaseStream.WriteAsync(bytes, 0, bytes.Length);
+                        new Thread(() =>
+                        {
+                            receiverSW.BaseStream.Write(bytes, 0, bytes.Length);
+                        }).Start();
                     }
                     else
                     // if group's name is in GROUP list, then do sending the message to users in it
@@ -265,7 +270,10 @@ namespace Server
                                 receiverSW.AutoFlush = true;
                                 receiverSW.WriteLine("<Image>");
                                 receiverSW.WriteLine(splitString[0]);
-                                receiverSW.BaseStream.WriteAsync(bytes, 0, bytes.Length);
+                                new Thread(() =>
+                                {
+                                    receiverSW.BaseStream.Write(bytes, 0, bytes.Length);
+                                }).Start();
                             }
                         }
                     }

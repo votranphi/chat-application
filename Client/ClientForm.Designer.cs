@@ -183,6 +183,7 @@ namespace Client
             btnVoice.Size = new Size(50, 50);
             btnVoice.TabIndex = 13;
             btnVoice.TabStop = false;
+            btnVoice.Click += btnVoice_Click;
             // 
             // emojiCB
             // 

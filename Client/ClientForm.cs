@@ -1,7 +1,10 @@
-﻿using System.Drawing;
+﻿using Microsoft.CognitiveServices.Speech.Audio;
+using Microsoft.CognitiveServices.Speech;
+using System.Drawing;
 using System.Net;
 using System.Net.Sockets;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 
 namespace Client
 {
@@ -36,6 +39,7 @@ namespace Client
             clientThread.IsBackground = true;
         }
 
+        // lang nghe du lieu tu server
         private void receiveFromServer() // always running
         {
             while (isClientRunning)
@@ -86,7 +90,7 @@ namespace Client
 
                     string sender = streamReader.ReadLine();
 
-                    streamReader.BaseStream.ReadAsync(bytes, 0, bytes.Length);
+                    streamReader.BaseStream.Read(bytes, 0, bytes.Length);
 
                     // create a new ImageViewForm to display the picture
                     new Thread(() => Application.Run(new ImageViewForm(bytes, username))).Start();
@@ -190,7 +194,7 @@ namespace Client
         private void imageBtn_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "Image file|*.jpg";
+            ofd.Filter = "Image file|*.jpg;*.png;*.jpeg";
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
@@ -203,7 +207,11 @@ namespace Client
                 // send the signal message and byte array to server
                 streamWriter.WriteLine("<Image>");
                 streamWriter.WriteLine($"{username}|{tbReceiver.Text}");
-                streamWriter.BaseStream.WriteAsync(bytes, 0, bytes.Length);
+
+                new Thread(() =>
+                {
+                    streamWriter.BaseStream.Write(bytes, 0, bytes.Length);
+                }).Start();
             }
         }
 
@@ -236,8 +244,46 @@ namespace Client
             dgvUser.ClearSelection();
         }
 
+        private async void btnVoice_Click(object sender, EventArgs e)
+        {
+            btnVoice.BackColor = Color.MediumSeaGreen;
+
+            var speechConfig = SpeechConfig.FromSubscription("f4e31e13b7a74b88b24ac20196052dfe", "southeastasia");
+            speechConfig.SpeechRecognitionLanguage = "vi-VN";
+
+            using var audioConfig = AudioConfig.FromDefaultMicrophoneInput();
+            using var speechRecognizer = new SpeechRecognizer(speechConfig, audioConfig);
+
+            // Console.WriteLine("Speak into your microphone.");
+            var speechRecognitionResult = await speechRecognizer.RecognizeOnceAsync();
+            OutputSpeechRecognitionResult(speechRecognitionResult);
+
+            btnVoice.BackColor = Color.CornflowerBlue;
+        }
+
+        private void OutputSpeechRecognitionResult(SpeechRecognitionResult speechRecognitionResult)
+        {
+            switch (speechRecognitionResult.Reason)
+            {
+                case ResultReason.RecognizedSpeech:
+                    msgToSend.Text += speechRecognitionResult.Text;
+                    break;
+                case ResultReason.NoMatch:
+                    MessageBox.Show("NOMATCH: Speech could not be recognized.");
+                    break;
+                case ResultReason.Canceled:
+                    var cancellation = CancellationDetails.FromResult(speechRecognitionResult);
+                    MessageBox.Show($"CANCELED: Reason={cancellation.Reason}");
+
+                    if (cancellation.Reason == CancellationReason.Error)
+                    {
+                        MessageBox.Show($"CANCELED: ErrorCode={cancellation.ErrorCode}\nCANCELED: ErrorDetails={cancellation.ErrorDetails}\nCANCELED: Did you set the speech resource key and region values?");
+                    }
+                    break;
+            }
+        }
+
         // the method use to format the message then update it to RichTextBox
-        // source: https://github.com/trinhvinhphuc/Chat-app/blob/master/Chat-app%20Client/ChatBox.cs
         private void AppendRichTextBox(string sender, string receiver, string message, string link)
         {
             statusAndMsg.BeginInvoke(new MethodInvoker(() =>

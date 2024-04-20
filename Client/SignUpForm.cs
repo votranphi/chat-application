@@ -33,6 +33,7 @@ namespace Client
             streamWriter.WriteLine("<Sign_Up>");
             streamWriter.WriteLine($"{username}|{password}");
 
+            // waitForSignUpResultFromServer
             string msgFromServer = streamReader.ReadLine();
 
             // solve the signals from server
