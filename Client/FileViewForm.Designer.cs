@@ -4,7 +4,7 @@ using System.Xml.Linq;
 
 namespace Client
 {
-    partial class VideoViewForm
+    partial class FileViewForm
     {
         /// <summary>
         /// Required designer variable.
@@ -32,15 +32,24 @@ namespace Client
         /// </summary>
         private void InitializeComponent()
         {
+            pb = new PictureBox();
             btnDownload = new Button();
             btnClose = new Button();
             pictureBox2 = new PictureBox();
             pictureBox3 = new PictureBox();
-            pb = new PictureBox();
+            ((System.ComponentModel.ISupportInitialize)pb).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox3).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)pb).BeginInit();
             SuspendLayout();
+            // 
+            // pb
+            // 
+            pb.Location = new Point(0, 0);
+            pb.Name = "pb";
+            pb.Size = new Size(584, 482);
+            pb.SizeMode = PictureBoxSizeMode.Zoom;
+            pb.TabIndex = 0;
+            pb.TabStop = false;
             // 
             // btnDownload
             // 
@@ -93,42 +102,35 @@ namespace Client
             pictureBox3.TabIndex = 4;
             pictureBox3.TabStop = false;
             // 
-            // pb
-            // 
-            pb.Location = new Point(12, 12);
-            pb.Name = "pb";
-            pb.Size = new Size(560, 481);
-            pb.TabIndex = 5;
-            pb.TabStop = false;
-            // 
-            // VideoViewForm
+            // ImageViewForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackgroundImage = Properties.Resources.form_background;
             BackgroundImageLayout = ImageLayout.Center;
             ClientSize = new Size(584, 561);
-            Controls.Add(pb);
             Controls.Add(pictureBox3);
             Controls.Add(pictureBox2);
             Controls.Add(btnClose);
             Controls.Add(btnDownload);
+            Controls.Add(pb);
             MaximumSize = new Size(600, 600);
             MinimumSize = new Size(600, 600);
-            Name = "VideoViewForm";
+            Name = "ImageViewForm";
             Text = "ImageViewForm";
-            Load += VideoViewForm_Load;
+            Load += FileViewForm_Load;
+            ((System.ComponentModel.ISupportInitialize)pb).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox3).EndInit();
-            ((System.ComponentModel.ISupportInitialize)pb).EndInit();
             ResumeLayout(false);
         }
 
         #endregion
+
+        private PictureBox pb;
         private Button btnDownload;
         private Button btnClose;
         private PictureBox pictureBox2;
         private PictureBox pictureBox3;
-        private PictureBox pb;
     }
 }

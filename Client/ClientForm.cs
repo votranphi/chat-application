@@ -17,6 +17,9 @@ namespace Client
         private StreamReader streamReader;
         private delegate void SafeCallDelegate(string text);
 
+        // maximum size of image is 524288 bytes
+        byte[] bytes = new byte[10000000];
+
         public ClientForm(TcpClient tcpClient, string username)
         {
             this.tcpClient = tcpClient;
@@ -85,17 +88,13 @@ namespace Client
                 // receive images from other clients
                 if (msgFromServer == "<Image>")
                 {
-                    // maximum size of image is 524288 bytes
-                    byte[] bytes = new byte[524288];
-
                     string senderAndFilenameAndFileExtension = streamReader.ReadLine();
                     // splitString[0] is sender's name, splitString[1] is file's name, splitString[2] is file's extension
                     string[] splitString = senderAndFilenameAndFileExtension.Split('|');
 
-                    streamReader.BaseStream.Read(bytes, 0, bytes.Length);
+                    // Thread.Sleep(10000);
 
-                    // create a new ImageViewForm to display the picture
-                    new Thread(() => Application.Run(new ImageViewForm(bytes, username, splitString[1], splitString[2]))).Start();
+                    streamReader.BaseStream.BeginRead(bytes, 0, bytes.Length, new AsyncCallback(onImageRead), new object[] { streamReader, splitString[1], splitString[2] });
 
                     // update the received message to the RichTextBox
                     AppendRichTextBox(splitString[0], username, "Sent you a picture.", "");
@@ -200,11 +199,46 @@ namespace Client
                 // send the signal message and byte array to server
                 streamWriter.WriteLine("<Image>");
                 streamWriter.WriteLine($"{username}|{tbReceiver.Text}|{fi.Name}|{fi.Extension}");
+                Thread.Sleep(500); // wait for the server for receiving two messages above
+                streamWriter.BaseStream.BeginWrite(bytes, 0, bytes.Length, new AsyncCallback(onWrite), streamWriter);
+            }
+        }
 
-                new Thread(() =>
-                {
-                    streamWriter.BaseStream.Write(bytes, 0, bytes.Length);
-                }).Start();
+        private void btnViddeo_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "Video (*.mp4)|*.mp4";
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                // convert image from OFD to byte array (image file to base64String)
+                byte[] bytes = File.ReadAllBytes(ofd.FileName);
+                FileInfo fi = new FileInfo(ofd.FileName);
+
+                // send the signal message and byte array to server
+                streamWriter.WriteLine("<Video>");
+                streamWriter.WriteLine($"{username}|{tbReceiver.Text}|{fi.Name}|{fi.Extension}");
+                Thread.Sleep(500); // wait for the server for receiving two messages above
+                streamWriter.BaseStream.BeginWrite(bytes, 0, bytes.Length, new AsyncCallback(onWrite), streamWriter);
+            }
+        }
+
+        private void btnFile_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "Files|*.docx;*.doc;*.pdf;*.html;*.css;*.js,*.ppt;*.pptx;*.xls;*.xlsx";
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                // convert image from OFD to byte array (image file to base64String)
+                byte[] bytes = File.ReadAllBytes(ofd.FileName);
+                FileInfo fi = new FileInfo(ofd.FileName);
+
+                // send the signal message and byte array to server
+                streamWriter.WriteLine("<File>");
+                streamWriter.WriteLine($"{username}|{tbReceiver.Text}|{fi.Name}|{fi.Extension}");
+                Thread.Sleep(500); // wait for the server for receiving two messages above
+                streamWriter.BaseStream.BeginWrite(bytes, 0, bytes.Length, new AsyncCallback(onWrite), streamWriter);
             }
         }
 
@@ -252,6 +286,26 @@ namespace Client
             OutputSpeechRecognitionResult(speechRecognitionResult);
 
             btnVoice.BackColor = Color.CornflowerBlue;
+        }
+
+        private void onImageRead(IAsyncResult ar)
+        {
+            object[] objects = (object[])ar.AsyncState;
+            StreamReader sr = (StreamReader)objects[0];
+            string fileName = (string)objects[1];
+            string fileExtension = (string)objects[2];
+
+            int readBytes = sr.BaseStream.EndRead(ar);
+
+            // create a new ImageViewForm to display the picture
+            new Thread(() => Application.Run(new ImageViewForm(bytes, username, fileName, fileExtension))).Start();
+        }
+
+        private void onWrite(IAsyncResult ar)
+        {
+            StreamWriter streamWriter = (StreamWriter)ar.AsyncState;
+
+            streamWriter.BaseStream.EndWrite(ar);
         }
 
         private void OutputSpeechRecognitionResult(SpeechRecognitionResult speechRecognitionResult)

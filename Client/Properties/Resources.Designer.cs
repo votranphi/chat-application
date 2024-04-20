@@ -113,6 +113,16 @@ namespace Client.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap file_icon {
+            get {
+                object obj = ResourceManager.GetObject("file_icon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap find_icon {
             get {
                 object obj = ResourceManager.GetObject("find_icon", resourceCulture);
@@ -186,6 +196,16 @@ namespace Client.Properties {
         internal static System.Drawing.Bitmap settingIcon {
             get {
                 object obj = ResourceManager.GetObject("settingIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap video_icon {
+            get {
+                object obj = ResourceManager.GetObject("video_icon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

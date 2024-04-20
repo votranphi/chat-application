@@ -48,6 +48,8 @@ namespace Client
             _username = new DataGridViewTextBoxColumn();
             dgvGroup = new DataGridView();
             groupsName = new DataGridViewTextBoxColumn();
+            btnViddeo = new PictureBox();
+            btnFile = new PictureBox();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
             ((System.ComponentModel.ISupportInitialize)sendBtn).BeginInit();
@@ -56,14 +58,16 @@ namespace Client
             ((System.ComponentModel.ISupportInitialize)btnVoice).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dgvUser).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dgvGroup).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)btnViddeo).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)btnFile).BeginInit();
             SuspendLayout();
             // 
             // msgToSend
             // 
             msgToSend.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            msgToSend.Location = new Point(462, 594);
+            msgToSend.Location = new Point(542, 594);
             msgToSend.Name = "msgToSend";
-            msgToSend.Size = new Size(454, 29);
+            msgToSend.Size = new Size(374, 29);
             msgToSend.TabIndex = 0;
             msgToSend.KeyPress += msgToSend_KeyPress;
             // 
@@ -178,7 +182,7 @@ namespace Client
             btnVoice.BackgroundImage = Properties.Resources.voiceIcon;
             btnVoice.BackgroundImageLayout = ImageLayout.Zoom;
             btnVoice.Cursor = Cursors.Hand;
-            btnVoice.Location = new Point(350, 585);
+            btnVoice.Location = new Point(442, 585);
             btnVoice.Name = "btnVoice";
             btnVoice.Size = new Size(50, 50);
             btnVoice.TabIndex = 13;
@@ -191,9 +195,9 @@ namespace Client
             emojiCB.FormattingEnabled = true;
             emojiCB.ItemHeight = 15;
             emojiCB.Items.AddRange(new object[] { "😁", "😂", "\U0001f923", "😅", "😆", "😍", "😘", "\U0001f970", "👍", "❤" });
-            emojiCB.Location = new Point(406, 596);
+            emojiCB.Location = new Point(498, 594);
             emojiCB.Name = "emojiCB";
-            emojiCB.Size = new Size(50, 23);
+            emojiCB.Size = new Size(38, 23);
             emojiCB.TabIndex = 14;
             emojiCB.SelectedIndexChanged += emojiCB_SelectedIndexChanged;
             // 
@@ -241,6 +245,32 @@ namespace Client
             groupsName.HeaderText = "Group's name";
             groupsName.Name = "groupsName";
             // 
+            // btnViddeo
+            // 
+            btnViddeo.BackColor = Color.CornflowerBlue;
+            btnViddeo.BackgroundImage = Properties.Resources.video_icon;
+            btnViddeo.BackgroundImageLayout = ImageLayout.Zoom;
+            btnViddeo.Cursor = Cursors.Hand;
+            btnViddeo.Location = new Point(336, 585);
+            btnViddeo.Name = "btnViddeo";
+            btnViddeo.Size = new Size(50, 50);
+            btnViddeo.TabIndex = 13;
+            btnViddeo.TabStop = false;
+            btnViddeo.Click += btnViddeo_Click;
+            // 
+            // btnFile
+            // 
+            btnFile.BackColor = Color.CornflowerBlue;
+            btnFile.BackgroundImage = Properties.Resources.file_icon;
+            btnFile.BackgroundImageLayout = ImageLayout.Zoom;
+            btnFile.Cursor = Cursors.Hand;
+            btnFile.Location = new Point(389, 585);
+            btnFile.Name = "btnFile";
+            btnFile.Size = new Size(50, 50);
+            btnFile.TabIndex = 16;
+            btnFile.TabStop = false;
+            btnFile.Click += btnFile_Click;
+            // 
             // ClientForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -249,9 +279,11 @@ namespace Client
             BackgroundImage = Properties.Resources.form_background;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(984, 661);
+            Controls.Add(btnFile);
             Controls.Add(dgvGroup);
             Controls.Add(dgvUser);
             Controls.Add(emojiCB);
+            Controls.Add(btnViddeo);
             Controls.Add(btnVoice);
             Controls.Add(imageBtn);
             Controls.Add(statusAndMsg);
@@ -274,6 +306,8 @@ namespace Client
             ((System.ComponentModel.ISupportInitialize)btnVoice).EndInit();
             ((System.ComponentModel.ISupportInitialize)dgvUser).EndInit();
             ((System.ComponentModel.ISupportInitialize)dgvGroup).EndInit();
+            ((System.ComponentModel.ISupportInitialize)btnViddeo).EndInit();
+            ((System.ComponentModel.ISupportInitialize)btnFile).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -295,5 +329,7 @@ namespace Client
         private DataGridView dgvGroup;
         private DataGridViewTextBoxColumn _username;
         private DataGridViewTextBoxColumn groupsName;
+        private PictureBox btnViddeo;
+        private PictureBox btnFile;
     }
 }

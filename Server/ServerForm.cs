@@ -21,6 +21,9 @@ namespace Server
         private delegate void SafeCallDelegate(string text);
         private delegate void SafeCallDelegateImage(Bitmap bmp);
 
+        // maximum size of image is 524288 bytes
+        byte[] bytes = new byte[10000000];
+
         public ServerForm()
         {
             InitializeComponent();
@@ -240,44 +243,10 @@ namespace Server
                     // splitString[2] is file's name, splitString[3] is file's extension
                     string[] splitString = senderAndReceiverAndFilenameAndFileExtension.Split('|');
 
-                    // maximum size of image is 524288 bytes
-                    byte[] bytes = new byte[524288];
-                    // wait for client side to complete writing data
-                    streamReader.BaseStream.Read(bytes, 0, bytes.Length);
+                    // Thread.Sleep(10000);
 
-                    // if receiver's name is in CLIENT list, then do sending the message to it
-                    if (CLIENT.ContainsKey(splitString[1]))
-                    {
-                        StreamWriter receiverSW = new StreamWriter(CLIENT[splitString[1]].GetStream());
-                        receiverSW.AutoFlush = true;
-                        receiverSW.WriteLine("<Image>");
-                        receiverSW.WriteLine($"{splitString[0]}|{splitString[2]}|{splitString[3]}");
-                        new Thread(() =>
-                        {
-                            receiverSW.BaseStream.Write(bytes, 0, bytes.Length);
-                        }).Start();
-                    }
-                    else
-                    // if group's name is in GROUP list, then do sending the message to users in it
-                    if (GROUP.ContainsKey(splitString[1]))
-                    {
-                        List<string> usersInGroup = GROUP[splitString[1]];
-                        foreach (string user in usersInGroup)
-                        {
-                            // only send if the... it's hard to say...
-                            if (_client != CLIENT[user] && STATUS[user] == true)
-                            {
-                                StreamWriter receiverSW = new StreamWriter(CLIENT[user].GetStream());
-                                receiverSW.AutoFlush = true;
-                                receiverSW.WriteLine("<Image>");
-                                receiverSW.WriteLine($"{splitString[0]}|{splitString[2]}|{splitString[3]}");
-                                new Thread(() =>
-                                {
-                                    receiverSW.BaseStream.Write(bytes, 0, bytes.Length);
-                                }).Start();
-                            }
-                        }
-                    }
+                    // wait for client side to complete writing data
+                    streamReader.BaseStream.BeginRead(bytes, 0, bytes.Length, new AsyncCallback(onImageRead), new object[] { streamReader, splitString[0], splitString[1], splitString[2], splitString[3] });
 
                     continue;
                 }
@@ -373,6 +342,54 @@ namespace Server
                 }
             }
             streamWriter.WriteLine(formatMsg);
+        }
+
+        private void onImageRead(IAsyncResult ar)
+        {
+            object[] objects = (object[])ar.AsyncState;
+            StreamReader streamReader = (StreamReader)objects[0];
+            string sender = (string)objects[1]; // splitString[0]
+            string receiver = (string)objects[2]; // splitString[1]
+            string fileName = (string)objects[3]; // splitString[2]
+            string fileExtension = (string)objects[4]; // splitString[3]
+
+            int readBytes = streamReader.BaseStream.EndRead(ar);
+
+            // if receiver's name is in CLIENT list, then do sending the message to it
+            if (CLIENT.ContainsKey(receiver))
+            {
+                StreamWriter receiverSW = new StreamWriter(CLIENT[receiver].GetStream());
+                receiverSW.AutoFlush = true;
+                receiverSW.WriteLine("<Image>");
+                receiverSW.WriteLine($"{sender}|{fileName}|{fileExtension}");
+                Thread.Sleep(500); // wait for the client to receive two messages above
+                receiverSW.BaseStream.BeginWrite(bytes, 0, readBytes, new AsyncCallback(onImageWrite), receiverSW);
+            }
+            else
+            // if group's name is in GROUP list, then do sending the message to users in it
+            if (GROUP.ContainsKey(receiver))
+            {
+                List<string> usersInGroup = GROUP[receiver];
+                foreach (string user in usersInGroup)
+                {
+                    // only send if the... it's hard to say...
+                    if (CLIENT[sender] != CLIENT[user] && STATUS[user] == true)
+                    {
+                        StreamWriter receiverSW = new StreamWriter(CLIENT[user].GetStream());
+                        receiverSW.AutoFlush = true;
+                        receiverSW.WriteLine("<Image>");
+                        receiverSW.WriteLine($"{sender}|{fileName}|{fileExtension}");
+                        Thread.Sleep(500); // wait for the client to receive two messages above
+                        receiverSW.BaseStream.BeginWrite(bytes, 0, readBytes, new AsyncCallback(onImageWrite), receiverSW);
+                    }
+                }
+            }
+        }
+
+        private void onImageWrite(IAsyncResult ar)
+        {
+            StreamWriter streamWriter = (StreamWriter)ar.AsyncState;
+            streamWriter.BaseStream.EndWrite(ar);
         }
 
         #region UpdateThreadSafe

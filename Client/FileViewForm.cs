@@ -12,13 +12,13 @@ using System.Windows.Forms;
 
 namespace Client
 {
-    public partial class VideoViewForm : Form
+    public partial class FileViewForm : Form
     {
         private byte[] bytes;
         private string fileName;
         private string fileExtension;
 
-        public VideoViewForm(byte[] bytes, string username, string fileName, string fileExtension)
+        public FileViewForm(byte[] bytes, string username, string fileName, string fileExtension)
         {
             this.bytes = bytes;
             this.fileName = fileName;
@@ -27,7 +27,7 @@ namespace Client
             this.Text = $"{username}'s ImageViewForm";
         }
 
-        private void VideoViewForm_Load(object sender, EventArgs e)
+        private void FileViewForm_Load(object sender, EventArgs e)
         {
             // byte array to image (base64String to image file)
             Bitmap bmp;
