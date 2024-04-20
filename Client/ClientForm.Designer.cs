@@ -72,6 +72,7 @@ namespace Client
             tbReceiver.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
             tbReceiver.Location = new Point(272, 19);
             tbReceiver.Name = "tbReceiver";
+            tbReceiver.ReadOnly = true;
             tbReceiver.Size = new Size(159, 29);
             tbReceiver.TabIndex = 2;
             // 
