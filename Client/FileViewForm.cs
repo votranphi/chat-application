@@ -29,14 +29,7 @@ namespace Client
 
         private void FileViewForm_Load(object sender, EventArgs e)
         {
-            // byte array to image (base64String to image file)
-            Bitmap bmp;
-            using (var ms = new MemoryStream(bytes))
-            {
-                bmp = new Bitmap(ms);
-            }
-
-            pb.Image = bmp;
+            lblFileName.Text = fileName;
         }
 
         private void btnDownload_Click(object sender, EventArgs e)
@@ -50,7 +43,7 @@ namespace Client
 
             File.WriteAllBytes($"{path}\\{fileNameWithoutExtension}{fileExtension}", bytes);
 
-            MessageBox.Show($"Image is downloaded to {path}!");
+            MessageBox.Show($"File is downloaded to {path}!");
         }
 
         private void btnClose_Click(object sender, EventArgs e)

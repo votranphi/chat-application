@@ -251,6 +251,38 @@ namespace Server
                     continue;
                 }
 
+                // solve the video signal from client
+                if (msgFromClient == "<Video>")
+                {
+                    string senderAndReceiverAndFilenameAndFileExtension = streamReader.ReadLine();
+                    // splitString[0] is sender's username, splitString[1] is receiver's username or group's name
+                    // splitString[2] is file's name, splitString[3] is file's extension
+                    string[] splitString = senderAndReceiverAndFilenameAndFileExtension.Split('|');
+
+                    // Thread.Sleep(10000);
+
+                    // wait for client side to complete writing data
+                    streamReader.BaseStream.BeginRead(bytes, 0, bytes.Length, new AsyncCallback(onVideoRead), new object[] { streamReader, splitString[0], splitString[1], splitString[2], splitString[3] });
+
+                    continue;
+                }
+
+                // solve the file signal from client
+                if (msgFromClient == "<File>")
+                {
+                    string senderAndReceiverAndFilenameAndFileExtension = streamReader.ReadLine();
+                    // splitString[0] is sender's username, splitString[1] is receiver's username or group's name
+                    // splitString[2] is file's name, splitString[3] is file's extension
+                    string[] splitString = senderAndReceiverAndFilenameAndFileExtension.Split('|');
+
+                    // Thread.Sleep(10000);
+
+                    // wait for client side to complete writing data
+                    streamReader.BaseStream.BeginRead(bytes, 0, bytes.Length, new AsyncCallback(onFileRead), new object[] { streamReader, splitString[0], splitString[1], splitString[2], splitString[3] });
+
+                    continue;
+                }
+
                 // solve the message signal from client
                 if (msgFromClient == "<Message>")
                 {
@@ -363,7 +395,7 @@ namespace Server
                 receiverSW.WriteLine("<Image>");
                 receiverSW.WriteLine($"{sender}|{fileName}|{fileExtension}");
                 Thread.Sleep(500); // wait for the client to receive two messages above
-                receiverSW.BaseStream.BeginWrite(bytes, 0, readBytes, new AsyncCallback(onImageWrite), receiverSW);
+                receiverSW.BaseStream.BeginWrite(bytes, 0, readBytes, new AsyncCallback(onWrite), receiverSW);
             }
             else
             // if group's name is in GROUP list, then do sending the message to users in it
@@ -380,13 +412,97 @@ namespace Server
                         receiverSW.WriteLine("<Image>");
                         receiverSW.WriteLine($"{sender}|{fileName}|{fileExtension}");
                         Thread.Sleep(500); // wait for the client to receive two messages above
-                        receiverSW.BaseStream.BeginWrite(bytes, 0, readBytes, new AsyncCallback(onImageWrite), receiverSW);
+                        receiverSW.BaseStream.BeginWrite(bytes, 0, readBytes, new AsyncCallback(onWrite), receiverSW);
                     }
                 }
             }
         }
 
-        private void onImageWrite(IAsyncResult ar)
+        private void onVideoRead(IAsyncResult ar)
+        {
+            object[] objects = (object[])ar.AsyncState;
+            StreamReader streamReader = (StreamReader)objects[0];
+            string sender = (string)objects[1]; // splitString[0]
+            string receiver = (string)objects[2]; // splitString[1]
+            string fileName = (string)objects[3]; // splitString[2]
+            string fileExtension = (string)objects[4]; // splitString[3]
+
+            int readBytes = streamReader.BaseStream.EndRead(ar);
+
+            // if receiver's name is in CLIENT list, then do sending the message to it
+            if (CLIENT.ContainsKey(receiver))
+            {
+                StreamWriter receiverSW = new StreamWriter(CLIENT[receiver].GetStream());
+                receiverSW.AutoFlush = true;
+                receiverSW.WriteLine("<Video>");
+                receiverSW.WriteLine($"{sender}|{fileName}|{fileExtension}");
+                Thread.Sleep(500); // wait for the client to receive two messages above
+                receiverSW.BaseStream.BeginWrite(bytes, 0, readBytes, new AsyncCallback(onWrite), receiverSW);
+            }
+            else
+            // if group's name is in GROUP list, then do sending the message to users in it
+            if (GROUP.ContainsKey(receiver))
+            {
+                List<string> usersInGroup = GROUP[receiver];
+                foreach (string user in usersInGroup)
+                {
+                    // only send if the... it's hard to say...
+                    if (CLIENT[sender] != CLIENT[user] && STATUS[user] == true)
+                    {
+                        StreamWriter receiverSW = new StreamWriter(CLIENT[user].GetStream());
+                        receiverSW.AutoFlush = true;
+                        receiverSW.WriteLine("<Video>");
+                        receiverSW.WriteLine($"{sender}|{fileName}|{fileExtension}");
+                        Thread.Sleep(500); // wait for the client to receive two messages above
+                        receiverSW.BaseStream.BeginWrite(bytes, 0, readBytes, new AsyncCallback(onWrite), receiverSW);
+                    }
+                }
+            }
+        }
+
+        private void onFileRead(IAsyncResult ar)
+        {
+            object[] objects = (object[])ar.AsyncState;
+            StreamReader streamReader = (StreamReader)objects[0];
+            string sender = (string)objects[1]; // splitString[0]
+            string receiver = (string)objects[2]; // splitString[1]
+            string fileName = (string)objects[3]; // splitString[2]
+            string fileExtension = (string)objects[4]; // splitString[3]
+
+            int readBytes = streamReader.BaseStream.EndRead(ar);
+
+            // if receiver's name is in CLIENT list, then do sending the message to it
+            if (CLIENT.ContainsKey(receiver))
+            {
+                StreamWriter receiverSW = new StreamWriter(CLIENT[receiver].GetStream());
+                receiverSW.AutoFlush = true;
+                receiverSW.WriteLine("<File>");
+                receiverSW.WriteLine($"{sender}|{fileName}|{fileExtension}");
+                Thread.Sleep(500); // wait for the client to receive two messages above
+                receiverSW.BaseStream.BeginWrite(bytes, 0, readBytes, new AsyncCallback(onWrite), receiverSW);
+            }
+            else
+            // if group's name is in GROUP list, then do sending the message to users in it
+            if (GROUP.ContainsKey(receiver))
+            {
+                List<string> usersInGroup = GROUP[receiver];
+                foreach (string user in usersInGroup)
+                {
+                    // only send if the... it's hard to say...
+                    if (CLIENT[sender] != CLIENT[user] && STATUS[user] == true)
+                    {
+                        StreamWriter receiverSW = new StreamWriter(CLIENT[user].GetStream());
+                        receiverSW.AutoFlush = true;
+                        receiverSW.WriteLine("<File>");
+                        receiverSW.WriteLine($"{sender}|{fileName}|{fileExtension}");
+                        Thread.Sleep(500); // wait for the client to receive two messages above
+                        receiverSW.BaseStream.BeginWrite(bytes, 0, readBytes, new AsyncCallback(onWrite), receiverSW);
+                    }
+                }
+            }
+        }
+
+        private void onWrite(IAsyncResult ar)
         {
             StreamWriter streamWriter = (StreamWriter)ar.AsyncState;
             streamWriter.BaseStream.EndWrite(ar);

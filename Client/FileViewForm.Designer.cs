@@ -37,6 +37,8 @@ namespace Client
             btnClose = new Button();
             pictureBox2 = new PictureBox();
             pictureBox3 = new PictureBox();
+            label1 = new Label();
+            lblFileName = new Label();
             ((System.ComponentModel.ISupportInitialize)pb).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox3).BeginInit();
@@ -102,13 +104,35 @@ namespace Client
             pictureBox3.TabIndex = 4;
             pictureBox3.TabStop = false;
             // 
-            // ImageViewForm
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Font = new Font("Segoe UI", 18F, FontStyle.Bold, GraphicsUnit.Point);
+            label1.Location = new Point(38, 224);
+            label1.Name = "label1";
+            label1.Size = new Size(137, 32);
+            label1.TabIndex = 5;
+            label1.Text = "File name: ";
+            // 
+            // lblFileName
+            // 
+            lblFileName.AutoSize = true;
+            lblFileName.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point);
+            lblFileName.Location = new Point(168, 224);
+            lblFileName.Name = "lblFileName";
+            lblFileName.Size = new Size(136, 32);
+            lblFileName.TabIndex = 5;
+            lblFileName.Text = "example.txt";
+            // 
+            // FileViewForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackgroundImage = Properties.Resources.form_background;
             BackgroundImageLayout = ImageLayout.Center;
             ClientSize = new Size(584, 561);
+            Controls.Add(lblFileName);
+            Controls.Add(label1);
             Controls.Add(pictureBox3);
             Controls.Add(pictureBox2);
             Controls.Add(btnClose);
@@ -116,13 +140,14 @@ namespace Client
             Controls.Add(pb);
             MaximumSize = new Size(600, 600);
             MinimumSize = new Size(600, 600);
-            Name = "ImageViewForm";
+            Name = "FileViewForm";
             Text = "ImageViewForm";
             Load += FileViewForm_Load;
             ((System.ComponentModel.ISupportInitialize)pb).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox3).EndInit();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -132,5 +157,7 @@ namespace Client
         private Button btnClose;
         private PictureBox pictureBox2;
         private PictureBox pictureBox3;
+        private Label label1;
+        private Label lblFileName;
     }
 }

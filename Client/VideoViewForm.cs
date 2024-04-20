@@ -9,6 +9,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MediaPlayer;
+using WMPLib;
 
 namespace Client
 {
@@ -29,14 +31,8 @@ namespace Client
 
         private void VideoViewForm_Load(object sender, EventArgs e)
         {
-            // byte array to image (base64String to image file)
-            Bitmap bmp;
-            using (var ms = new MemoryStream(bytes))
-            {
-                bmp = new Bitmap(ms);
-            }
-
-            pb.Image = bmp;
+            // play the video in here
+            
         }
 
         private void btnDownload_Click(object sender, EventArgs e)
@@ -50,7 +46,7 @@ namespace Client
 
             File.WriteAllBytes($"{path}\\{fileNameWithoutExtension}{fileExtension}", bytes);
 
-            MessageBox.Show($"Image is downloaded to {path}!");
+            MessageBox.Show($"Video is downloaded to {path}!");
         }
 
         private void btnClose_Click(object sender, EventArgs e)

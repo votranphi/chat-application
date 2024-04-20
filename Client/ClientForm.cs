@@ -102,6 +102,40 @@ namespace Client
                     continue;
                 }
 
+                // receive videos from other clients
+                if (msgFromServer == "<Video>")
+                {
+                    string senderAndFilenameAndFileExtension = streamReader.ReadLine();
+                    // splitString[0] is sender's name, splitString[1] is file's name, splitString[2] is file's extension
+                    string[] splitString = senderAndFilenameAndFileExtension.Split('|');
+
+                    // Thread.Sleep(10000);
+
+                    streamReader.BaseStream.BeginRead(bytes, 0, bytes.Length, new AsyncCallback(onVideoRead), new object[] { streamReader, splitString[1], splitString[2] });
+
+                    // update the received message to the RichTextBox
+                    AppendRichTextBox(splitString[0], username, "Sent you a video.", "");
+
+                    continue;
+                }
+
+                // receive Files from other clients
+                if (msgFromServer == "<File>")
+                {
+                    string senderAndFilenameAndFileExtension = streamReader.ReadLine();
+                    // splitString[0] is sender's name, splitString[1] is file's name, splitString[2] is file's extension
+                    string[] splitString = senderAndFilenameAndFileExtension.Split('|');
+
+                    // Thread.Sleep(10000);
+
+                    streamReader.BaseStream.BeginRead(bytes, 0, bytes.Length, new AsyncCallback(onFileRead), new object[] { streamReader, splitString[1], splitString[2] });
+
+                    // update the received message to the RichTextBox
+                    AppendRichTextBox(splitString[0], username, "Sent you a file.", "");
+
+                    continue;
+                }
+
                 // update the online user data grid view if a user logged in or signed up
                 if (msgFromServer == "<User_Onl>")
                 {
@@ -226,7 +260,7 @@ namespace Client
         private void btnFile_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "Files|*.docx;*.doc;*.pdf;*.html;*.css;*.js,*.ppt;*.pptx;*.xls;*.xlsx";
+            ofd.Filter = "Files|*.docx;*.doc;*.pdf;*.html;*.css;*.js,*.ppt;*.pptx;*.xls;*.xlsx;*.txt";
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
@@ -299,6 +333,32 @@ namespace Client
 
             // create a new ImageViewForm to display the picture
             new Thread(() => Application.Run(new ImageViewForm(bytes, username, fileName, fileExtension))).Start();
+        }
+
+        private void onVideoRead(IAsyncResult ar)
+        {
+            object[] objects = (object[])ar.AsyncState;
+            StreamReader sr = (StreamReader)objects[0];
+            string fileName = (string)objects[1];
+            string fileExtension = (string)objects[2];
+
+            int readBytes = sr.BaseStream.EndRead(ar);
+
+            // create a new ImageViewForm to display the picture
+            new Thread(() => Application.Run(new VideoViewForm(bytes, username, fileName, fileExtension))).Start();
+        }
+
+        private void onFileRead(IAsyncResult ar)
+        {
+            object[] objects = (object[])ar.AsyncState;
+            StreamReader sr = (StreamReader)objects[0];
+            string fileName = (string)objects[1];
+            string fileExtension = (string)objects[2];
+
+            int readBytes = sr.BaseStream.EndRead(ar);
+
+            // create a new ImageViewForm to display the picture
+            new Thread(() => Application.Run(new FileViewForm(bytes, username, fileName, fileExtension))).Start();
         }
 
         private void onWrite(IAsyncResult ar)
