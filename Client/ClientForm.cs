@@ -18,7 +18,7 @@ namespace Client
         private delegate void SafeCallDelegate(string text);
 
         // maximum size of image is 524288 bytes
-        byte[] bytes = new byte[10000000];
+        private byte[] bytes = new byte[10000000];
 
         public ClientForm(TcpClient tcpClient, string username)
         {
@@ -97,7 +97,7 @@ namespace Client
                     streamReader.BaseStream.BeginRead(bytes, 0, bytes.Length, new AsyncCallback(onImageRead), new object[] { streamReader, splitString[1], splitString[2] });
 
                     // update the received message to the RichTextBox
-                    AppendRichTextBox(splitString[0], username, "Sent you a picture.", "");
+                    AppendRichTextBox(splitString[0], username, $"Sent {username} an image", "");
 
                     continue;
                 }
@@ -114,7 +114,7 @@ namespace Client
                     streamReader.BaseStream.BeginRead(bytes, 0, bytes.Length, new AsyncCallback(onVideoRead), new object[] { streamReader, splitString[1], splitString[2] });
 
                     // update the received message to the RichTextBox
-                    AppendRichTextBox(splitString[0], username, "Sent you a video.", "");
+                    AppendRichTextBox(splitString[0], username, $"Sent {username} a video", "");
 
                     continue;
                 }
@@ -131,7 +131,7 @@ namespace Client
                     streamReader.BaseStream.BeginRead(bytes, 0, bytes.Length, new AsyncCallback(onFileRead), new object[] { streamReader, splitString[1], splitString[2] });
 
                     // update the received message to the RichTextBox
-                    AppendRichTextBox(splitString[0], username, "Sent you a file.", "");
+                    AppendRichTextBox(splitString[0], username, $"Sent {username} a *{splitString[2]} file", "");
 
                     continue;
                 }
@@ -230,6 +230,9 @@ namespace Client
                 byte[] bytes = File.ReadAllBytes(ofd.FileName);
                 FileInfo fi = new FileInfo(ofd.FileName);
 
+                // update to RichTextBox
+                AppendRichTextBox(username, tbReceiver.Text, $"Sent {tbReceiver.Text} an image", "");
+
                 // send the signal message and byte array to server
                 streamWriter.WriteLine("<Image>");
                 streamWriter.WriteLine($"{username}|{tbReceiver.Text}|{fi.Name}|{fi.Extension}");
@@ -238,7 +241,7 @@ namespace Client
             }
         }
 
-        private void btnViddeo_Click(object sender, EventArgs e)
+        private void btnVideo_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Filter = "Video (*.mp4)|*.mp4";
@@ -248,6 +251,9 @@ namespace Client
                 // convert image from OFD to byte array (image file to base64String)
                 byte[] bytes = File.ReadAllBytes(ofd.FileName);
                 FileInfo fi = new FileInfo(ofd.FileName);
+
+                // update to RichTextBox
+                AppendRichTextBox(username, tbReceiver.Text, $"Sent {tbReceiver.Text} a video", "");
 
                 // send the signal message and byte array to server
                 streamWriter.WriteLine("<Video>");
@@ -267,6 +273,9 @@ namespace Client
                 // convert image from OFD to byte array (image file to base64String)
                 byte[] bytes = File.ReadAllBytes(ofd.FileName);
                 FileInfo fi = new FileInfo(ofd.FileName);
+
+                // update to RichTextBox
+                AppendRichTextBox(username, tbReceiver.Text, $"Sent {tbReceiver.Text} a *{fi.Extension} file", "");
 
                 // send the signal message and byte array to server
                 streamWriter.WriteLine("<File>");
@@ -332,7 +341,7 @@ namespace Client
             int readBytes = sr.BaseStream.EndRead(ar);
 
             // create a new ImageViewForm to display the picture
-            new Thread(() => Application.Run(new ImageViewForm(bytes, username, fileName, fileExtension))).Start();
+            new Thread(() => Application.Run(new ImageViewForm(bytes, readBytes, username, fileName, fileExtension))).Start();
         }
 
         private void onVideoRead(IAsyncResult ar)
@@ -345,7 +354,7 @@ namespace Client
             int readBytes = sr.BaseStream.EndRead(ar);
 
             // create a new ImageViewForm to display the picture
-            new Thread(() => Application.Run(new VideoViewForm(bytes, username, fileName, fileExtension))).Start();
+            new Thread(() => Application.Run(new VideoViewForm(bytes, readBytes, username, fileName, fileExtension))).Start();
         }
 
         private void onFileRead(IAsyncResult ar)
@@ -358,7 +367,7 @@ namespace Client
             int readBytes = sr.BaseStream.EndRead(ar);
 
             // create a new ImageViewForm to display the picture
-            new Thread(() => Application.Run(new FileViewForm(bytes, username, fileName, fileExtension))).Start();
+            new Thread(() => Application.Run(new FileViewForm(bytes, readBytes, username, fileName, fileExtension))).Start();
         }
 
         private void onWrite(IAsyncResult ar)

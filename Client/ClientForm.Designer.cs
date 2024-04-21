@@ -48,7 +48,7 @@ namespace Client
             _username = new DataGridViewTextBoxColumn();
             dgvGroup = new DataGridView();
             groupsName = new DataGridViewTextBoxColumn();
-            btnViddeo = new PictureBox();
+            btnVideo = new PictureBox();
             btnFile = new PictureBox();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
@@ -58,7 +58,7 @@ namespace Client
             ((System.ComponentModel.ISupportInitialize)btnVoice).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dgvUser).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dgvGroup).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)btnViddeo).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)btnVideo).BeginInit();
             ((System.ComponentModel.ISupportInitialize)btnFile).BeginInit();
             SuspendLayout();
             // 
@@ -245,18 +245,18 @@ namespace Client
             groupsName.HeaderText = "Group's name";
             groupsName.Name = "groupsName";
             // 
-            // btnViddeo
+            // btnVideo
             // 
-            btnViddeo.BackColor = Color.CornflowerBlue;
-            btnViddeo.BackgroundImage = Properties.Resources.video_icon;
-            btnViddeo.BackgroundImageLayout = ImageLayout.Zoom;
-            btnViddeo.Cursor = Cursors.Hand;
-            btnViddeo.Location = new Point(336, 585);
-            btnViddeo.Name = "btnViddeo";
-            btnViddeo.Size = new Size(50, 50);
-            btnViddeo.TabIndex = 13;
-            btnViddeo.TabStop = false;
-            btnViddeo.Click += btnViddeo_Click;
+            btnVideo.BackColor = Color.CornflowerBlue;
+            btnVideo.BackgroundImage = Properties.Resources.video_icon;
+            btnVideo.BackgroundImageLayout = ImageLayout.Zoom;
+            btnVideo.Cursor = Cursors.Hand;
+            btnVideo.Location = new Point(336, 585);
+            btnVideo.Name = "btnVideo";
+            btnVideo.Size = new Size(50, 50);
+            btnVideo.TabIndex = 13;
+            btnVideo.TabStop = false;
+            btnVideo.Click += btnVideo_Click;
             // 
             // btnFile
             // 
@@ -283,7 +283,7 @@ namespace Client
             Controls.Add(dgvGroup);
             Controls.Add(dgvUser);
             Controls.Add(emojiCB);
-            Controls.Add(btnViddeo);
+            Controls.Add(btnVideo);
             Controls.Add(btnVoice);
             Controls.Add(imageBtn);
             Controls.Add(statusAndMsg);
@@ -306,7 +306,7 @@ namespace Client
             ((System.ComponentModel.ISupportInitialize)btnVoice).EndInit();
             ((System.ComponentModel.ISupportInitialize)dgvUser).EndInit();
             ((System.ComponentModel.ISupportInitialize)dgvGroup).EndInit();
-            ((System.ComponentModel.ISupportInitialize)btnViddeo).EndInit();
+            ((System.ComponentModel.ISupportInitialize)btnVideo).EndInit();
             ((System.ComponentModel.ISupportInitialize)btnFile).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -329,7 +329,7 @@ namespace Client
         private DataGridView dgvGroup;
         private DataGridViewTextBoxColumn _username;
         private DataGridViewTextBoxColumn groupsName;
-        private PictureBox btnViddeo;
+        private PictureBox btnVideo;
         private PictureBox btnFile;
     }
 }

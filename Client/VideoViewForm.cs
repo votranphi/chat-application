@@ -15,13 +15,15 @@ namespace Client
     public partial class VideoViewForm : Form
     {
         private byte[] bytes;
+        private int readBytes;
         private string fileName;
         private string fileExtension;
         WMPLib.WindowsMediaPlayer Player;
 
-        public VideoViewForm(byte[] bytes, string username, string fileName, string fileExtension)
+        public VideoViewForm(byte[] bytes, int readBytes, string username, string fileName, string fileExtension)
         {
             this.bytes = bytes;
+            this.readBytes = readBytes;
             this.fileName = fileName;
             this.fileExtension = fileExtension;
             InitializeComponent();
@@ -35,9 +37,9 @@ namespace Client
 
             path += "\\..\\..\\..\\Downloads\\";
 
-            string fileNameWithoutExtension = fileName.Replace(fileExtension, "");
-
-            File.WriteAllBytes($"{path}\\tempVideo{fileExtension}", bytes);
+            // File.WriteAllBytes($"{path}\\tempVideo{fileExtension}", bytes); // non size flexible
+            var stream = File.OpenWrite($"{path}\\tempVideo{fileExtension}");
+            stream.Write(bytes, 0, readBytes); // size flexible
 
             // then play it
             PlayFile($"{path}\\tempVideo{fileExtension}");
@@ -52,7 +54,9 @@ namespace Client
 
             string fileNameWithoutExtension = fileName.Replace(fileExtension, "");
 
-            File.WriteAllBytes($"{path}\\{fileNameWithoutExtension}{fileExtension}", bytes);
+            // File.WriteAllBytes($"{path}\\{fileNameWithoutExtension}{fileExtension}", bytes); // non size flexible
+            var stream = File.OpenWrite($"{path}\\{fileNameWithoutExtension}{fileExtension}");
+            stream.Write(bytes, 0, readBytes); // size flexible
 
             MessageBox.Show($"Video is downloaded to {path}!");
         }

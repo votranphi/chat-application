@@ -17,10 +17,12 @@ namespace Client
         private byte[] bytes;
         private string fileName;
         private string fileExtension;
+        private int readBytes;
 
-        public ImageViewForm(byte[] bytes, string username, string fileName, string fileExtension)
+        public ImageViewForm(byte[] bytes, int readBytes, string username, string fileName, string fileExtension)
         {
             this.bytes = bytes;
+            this.readBytes = readBytes;
             this.fileName = fileName;
             this.fileExtension = fileExtension;
             InitializeComponent();
@@ -29,7 +31,7 @@ namespace Client
 
         private void ImageViewForm_Load(object sender, EventArgs e)
         {
-            // byte array to image (base64String to image file)
+            // byte array to image (base64String to image file) then display it to the picturebox
             Bitmap bmp;
             using (var ms = new MemoryStream(bytes))
             {
@@ -48,7 +50,9 @@ namespace Client
 
             string fileNameWithoutExtension = fileName.Replace(fileExtension, "");
 
-            File.WriteAllBytes($"{path}\\{fileNameWithoutExtension}{fileExtension}", bytes);
+            // File.WriteAllBytes($"{path}\\{fileNameWithoutExtension}{fileExtension}", bytes); // non size flexible
+            var stream = File.OpenWrite($"{path}\\{fileNameWithoutExtension}{fileExtension}");
+            stream.Write(bytes, 0, readBytes); // size flexible
 
             MessageBox.Show($"Image is downloaded to {path}!");
         }
