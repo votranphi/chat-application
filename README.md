@@ -23,7 +23,7 @@ After running the Client project, you will need to ask the administrator the Ser
 
 ### As an administrator
 
-After running the Server project, you will need to find out the IP of your device and fill it in the textbox. About the Port, you can use any Port that can be use. Remember to announce the Server IP and the Port so that user can connect to the Server. Finally, click the listen button and the Server will start to listen user's connecting request.
+After running the Server project, you will need to find out the Port number and fill it in the textbox, you can use any Port that can be use. Remember to announce the Port so that user can connect to the Server. Finally, click the listen button and the Server will start to listen user's connecting request.
 ## Features
 - Multiple clients can connect to the server and communicate with each other
 - Each client can send and receive messages in real-time
