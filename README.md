@@ -11,5 +11,5 @@ This branch was created to push the UI we made before we started to code the Bac
 - ClientForm: the interface appears when you log in successfully and can you to communicate with other users
 - CreateGroupForm: the interface appears when you want to create a group chat with multiple users
 - ImageViewForm: the interface appears when other users send you a picture
-- VideoViewForm: the interface appears when other users send you a video
+-VideoPlayerForm: the interface appears when other users send you a video
 - FileViewForm: the interface appears when other users send you a file
