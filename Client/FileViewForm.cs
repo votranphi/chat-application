@@ -17,14 +17,12 @@ namespace Client
         private byte[] buffer;
         private int readBytes;
         private string fileName;
-        private string fileExtension;
 
-        public FileViewForm(byte[] buffer, int readBytes, string username, string fileName, string fileExtension)
+        public FileViewForm(byte[] buffer, int readBytes, string username, string fileName)
         {
             this.buffer = buffer;
             this.readBytes = readBytes;
             this.fileName = fileName;
-            this.fileExtension = fileExtension;
             InitializeComponent();
             this.Text = $"{username}'s FileViewForm";
         }
@@ -39,16 +37,21 @@ namespace Client
             // download the file to C:\Users\USER_MACHINE_NAME\Downloads
             string path = Environment.GetEnvironmentVariable("TEMP");
 
+            // Example: path = "C:\Users\ASUS\AppData\Local\Temp"
+            // remove the \Appdata, \Local, \Temp
+            path = path.Replace("\\AppData", "");
+            path = path.Replace("\\Local", "");
+            path = path.Replace("\\Temp", "");
+
             // go to Downloads folder
-            path += "\\..\\..\\..\\Downloads\\";
+            path += "\\Downloads";
 
-            string fileNameWithoutExtension = fileName.Replace(fileExtension, "");
-
-            // File.WriteAllBytes($"{path}\\{fileNameWithoutExtension}{fileExtension}", bytes); // non size flexible
-            var stream = File.OpenWrite($"{path}\\{fileNameWithoutExtension}{fileExtension}");
+            // write the byte array to file
+            var stream = File.OpenWrite($"{path}\\{fileName}");
             stream.Write(buffer, 0, readBytes); // size flexible
+            stream.Close();
 
-            MessageBox.Show($"File is downloaded to {path}!");
+            MessageBox.Show($"File is downloaded to {path}\\{fileName}!");
         }
 
         private void btnClose_Click(object sender, EventArgs e)

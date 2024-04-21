@@ -89,13 +89,13 @@ namespace Client
                 // receive images from other clients
                 if (msgFromServer == "<Image>")
                 {
-                    string senderAndFilenameAndFileExtension = streamReader.ReadLine();
-                    // splitString[0] is sender's name, splitString[1] is file's name, splitString[2] is file's extension
-                    string[] splitString = senderAndFilenameAndFileExtension.Split('|');
+                    string senderAndFilename = streamReader.ReadLine();
+                    // splitString[0] is sender's name, splitString[1] is file's name
+                    string[] splitString = senderAndFilename.Split('|');
 
                     // Thread.Sleep(10000);
 
-                    streamReader.BaseStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(onImageRead), new object[] { streamReader, splitString[1], splitString[2] });
+                    streamReader.BaseStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(onImageRead), new object[] { streamReader, splitString[1] });
 
                     // update the received message to the RichTextBox
                     AppendRichTextBox(splitString[0], username, $"Sent {username} an image. Waiting for image's opening...", "");
@@ -129,7 +129,7 @@ namespace Client
 
                     // Thread.Sleep(10000);
 
-                    streamReader.BaseStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(onFileRead), new object[] { streamReader, splitString[1], splitString[2] });
+                    streamReader.BaseStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(onFileRead), new object[] { streamReader, splitString[1] });
 
                     // update the received message to the RichTextBox
                     AppendRichTextBox(splitString[0], username, $"Sent {username} a *{splitString[2]} file. Waiting for file's opening...", "");
@@ -236,7 +236,7 @@ namespace Client
 
                 // send the signal message and byte array to server
                 streamWriter.WriteLine("<Image>");
-                streamWriter.WriteLine($"{username}|{tbReceiver.Text}|{fi.Name}|{fi.Extension}");
+                streamWriter.WriteLine($"{username}|{tbReceiver.Text}|{fi.Name}");
                 Thread.Sleep(500); // wait for the server to receive two messages above
                 streamWriter.BaseStream.BeginWrite(bytes, 0, bytes.Length, new AsyncCallback(onWrite), streamWriter);
             }
@@ -337,12 +337,11 @@ namespace Client
             object[] objects = (object[])ar.AsyncState;
             StreamReader sr = (StreamReader)objects[0];
             string fileName = (string)objects[1];
-            string fileExtension = (string)objects[2];
 
             int readBytes = sr.BaseStream.EndRead(ar);
 
             // create a new ImageViewForm to display the picture
-            new Thread(() => Application.Run(new ImageViewForm(buffer, readBytes, username, fileName, fileExtension))).Start();
+            new Thread(() => Application.Run(new ImageViewForm(buffer, readBytes, username, fileName))).Start();
         }
 
         private void onVideoRead(IAsyncResult ar)
@@ -355,7 +354,9 @@ namespace Client
             int readBytes = sr.BaseStream.EndRead(ar);
 
             // create a new ImageViewForm to display the picture
-            new Thread(() => Application.Run(new VideoViewForm(buffer, readBytes, username, fileName, fileExtension))).Start();
+            Thread test = new Thread(() => Application.Run(new VideoPlayer.VideoPlayerForm(buffer, readBytes, username, fileName, fileExtension)));
+            test.ApartmentState = ApartmentState.STA;
+            test.Start();
         }
 
         private void onFileRead(IAsyncResult ar)
@@ -363,12 +364,11 @@ namespace Client
             object[] objects = (object[])ar.AsyncState;
             StreamReader sr = (StreamReader)objects[0];
             string fileName = (string)objects[1];
-            string fileExtension = (string)objects[2];
 
             int readBytes = sr.BaseStream.EndRead(ar);
 
             // create a new ImageViewForm to display the picture
-            new Thread(() => Application.Run(new FileViewForm(buffer, readBytes, username, fileName, fileExtension))).Start();
+            new Thread(() => Application.Run(new FileViewForm(buffer, readBytes, username, fileName))).Start();
         }
 
         private void onWrite(IAsyncResult ar)
@@ -464,7 +464,7 @@ namespace Client
 
         private void UpdateOnlineUserDataGridViewThreadSafe(string text)
         {
-            if (statusAndMsg.InvokeRequired)
+            if (dgvUser.InvokeRequired)
             {
                 var d = new SafeCallDelegate(UpdateOnlineUserDataGridViewThreadSafe);
                 dgvUser.Invoke(d, new object[] { text });
@@ -477,7 +477,7 @@ namespace Client
 
         private void UpdateOfflineUserDataGridViewThreadSafe(string text)
         {
-            if (statusAndMsg.InvokeRequired)
+            if (dgvUser.InvokeRequired)
             {
                 var d = new SafeCallDelegate(UpdateOfflineUserDataGridViewThreadSafe);
                 dgvUser.Invoke(d, new object[] { text });
@@ -497,7 +497,7 @@ namespace Client
 
         private void UpdateGroupDataGridViewThreadSafe(string text)
         {
-            if (statusAndMsg.InvokeRequired)
+            if (dgvGroup.InvokeRequired)
             {
                 var d = new SafeCallDelegate(UpdateGroupDataGridViewThreadSafe);
                 dgvGroup.Invoke(d, new object[] { text });

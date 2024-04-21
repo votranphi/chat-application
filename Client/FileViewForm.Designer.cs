@@ -96,7 +96,7 @@ namespace Client
             // pictureBox3
             // 
             pictureBox3.BackColor = Color.Red;
-            pictureBox3.BackgroundImage = Properties.Resources.closeIcon1;
+            pictureBox3.BackgroundImage = Properties.Resources.closeIcon;
             pictureBox3.BackgroundImageLayout = ImageLayout.Zoom;
             pictureBox3.Location = new Point(451, 504);
             pictureBox3.Name = "pictureBox3";

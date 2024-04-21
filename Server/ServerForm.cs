@@ -238,15 +238,15 @@ namespace Server
                 // solve the image signal from client
                 if (msgFromClient == "<Image>")
                 {
-                    string senderAndReceiverAndFilenameAndFileExtension = streamReader.ReadLine();
+                    string senderAndReceiverAndFilename = streamReader.ReadLine();
                     // splitString[0] is sender's username, splitString[1] is receiver's username or group's name
-                    // splitString[2] is file's name, splitString[3] is file's extension
-                    string[] splitString = senderAndReceiverAndFilenameAndFileExtension.Split('|');
+                    // splitString[2] is file's name
+                    string[] splitString = senderAndReceiverAndFilename.Split('|');
 
                     // Thread.Sleep(10000);
 
                     // wait for client side to complete writing data
-                    streamReader.BaseStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(onImageRead), new object[] { streamReader, splitString[0], splitString[1], splitString[2], splitString[3] });
+                    streamReader.BaseStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(onImageRead), new object[] { streamReader, splitString[0], splitString[1], splitString[2] });
 
                     continue;
                 }
@@ -383,7 +383,6 @@ namespace Server
             string sender = (string)objects[1]; // splitString[0]
             string receiver = (string)objects[2]; // splitString[1]
             string fileName = (string)objects[3]; // splitString[2]
-            string fileExtension = (string)objects[4]; // splitString[3]
 
             int readBytes = streamReader.BaseStream.EndRead(ar);
 
@@ -393,7 +392,7 @@ namespace Server
                 StreamWriter receiverSW = new StreamWriter(CLIENT[receiver].GetStream());
                 receiverSW.AutoFlush = true;
                 receiverSW.WriteLine("<Image>");
-                receiverSW.WriteLine($"{sender}|{fileName}|{fileExtension}");
+                receiverSW.WriteLine($"{sender}|{fileName}");
                 Thread.Sleep(500); // wait for the client to receive two messages above
                 receiverSW.BaseStream.BeginWrite(buffer, 0, readBytes, new AsyncCallback(onWrite), receiverSW);
             }
@@ -410,7 +409,7 @@ namespace Server
                         StreamWriter receiverSW = new StreamWriter(CLIENT[user].GetStream());
                         receiverSW.AutoFlush = true;
                         receiverSW.WriteLine("<Image>");
-                        receiverSW.WriteLine($"{sender}|{fileName}|{fileExtension}");
+                        receiverSW.WriteLine($"{sender}|{fileName}");
                         Thread.Sleep(500); // wait for the client to receive two messages above
                         receiverSW.BaseStream.BeginWrite(buffer, 0, readBytes, new AsyncCallback(onWrite), receiverSW);
                     }
