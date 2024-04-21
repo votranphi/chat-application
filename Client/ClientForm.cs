@@ -17,8 +17,9 @@ namespace Client
         private StreamReader streamReader;
         private delegate void SafeCallDelegate(string text);
 
-        // maximum size of image is 524288 bytes
-        private byte[] bytes = new byte[10000000];
+        // maximum size of image is 100MB
+        private static int buffer_size = 104857600;
+        private byte[] buffer = new byte[buffer_size];
 
         public ClientForm(TcpClient tcpClient, string username)
         {
@@ -94,7 +95,7 @@ namespace Client
 
                     // Thread.Sleep(10000);
 
-                    streamReader.BaseStream.BeginRead(bytes, 0, bytes.Length, new AsyncCallback(onImageRead), new object[] { streamReader, splitString[1], splitString[2] });
+                    streamReader.BaseStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(onImageRead), new object[] { streamReader, splitString[1], splitString[2] });
 
                     // update the received message to the RichTextBox
                     AppendRichTextBox(splitString[0], username, $"Sent {username} an image", "");
@@ -111,7 +112,7 @@ namespace Client
 
                     // Thread.Sleep(10000);
 
-                    streamReader.BaseStream.BeginRead(bytes, 0, bytes.Length, new AsyncCallback(onVideoRead), new object[] { streamReader, splitString[1], splitString[2] });
+                    streamReader.BaseStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(onVideoRead), new object[] { streamReader, splitString[1], splitString[2] });
 
                     // update the received message to the RichTextBox
                     AppendRichTextBox(splitString[0], username, $"Sent {username} a video", "");
@@ -128,7 +129,7 @@ namespace Client
 
                     // Thread.Sleep(10000);
 
-                    streamReader.BaseStream.BeginRead(bytes, 0, bytes.Length, new AsyncCallback(onFileRead), new object[] { streamReader, splitString[1], splitString[2] });
+                    streamReader.BaseStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(onFileRead), new object[] { streamReader, splitString[1], splitString[2] });
 
                     // update the received message to the RichTextBox
                     AppendRichTextBox(splitString[0], username, $"Sent {username} a *{splitString[2]} file", "");
@@ -341,7 +342,7 @@ namespace Client
             int readBytes = sr.BaseStream.EndRead(ar);
 
             // create a new ImageViewForm to display the picture
-            new Thread(() => Application.Run(new ImageViewForm(bytes, readBytes, username, fileName, fileExtension))).Start();
+            new Thread(() => Application.Run(new ImageViewForm(buffer, readBytes, username, fileName, fileExtension))).Start();
         }
 
         private void onVideoRead(IAsyncResult ar)
@@ -354,7 +355,7 @@ namespace Client
             int readBytes = sr.BaseStream.EndRead(ar);
 
             // create a new ImageViewForm to display the picture
-            new Thread(() => Application.Run(new VideoViewForm(bytes, readBytes, username, fileName, fileExtension))).Start();
+            new Thread(() => Application.Run(new VideoViewForm(buffer, readBytes, username, fileName, fileExtension))).Start();
         }
 
         private void onFileRead(IAsyncResult ar)
@@ -367,7 +368,7 @@ namespace Client
             int readBytes = sr.BaseStream.EndRead(ar);
 
             // create a new ImageViewForm to display the picture
-            new Thread(() => Application.Run(new FileViewForm(bytes, readBytes, username, fileName, fileExtension))).Start();
+            new Thread(() => Application.Run(new FileViewForm(buffer, readBytes, username, fileName, fileExtension))).Start();
         }
 
         private void onWrite(IAsyncResult ar)

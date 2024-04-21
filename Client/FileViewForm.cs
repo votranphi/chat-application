@@ -14,14 +14,14 @@ namespace Client
 {
     public partial class FileViewForm : Form
     {
-        private byte[] bytes;
+        private byte[] buffer;
         private int readBytes;
         private string fileName;
         private string fileExtension;
 
-        public FileViewForm(byte[] bytes, int readBytes, string username, string fileName, string fileExtension)
+        public FileViewForm(byte[] buffer, int readBytes, string username, string fileName, string fileExtension)
         {
-            this.bytes = bytes;
+            this.buffer = buffer;
             this.readBytes = readBytes;
             this.fileName = fileName;
             this.fileExtension = fileExtension;
@@ -45,7 +45,7 @@ namespace Client
 
             // File.WriteAllBytes($"{path}\\{fileNameWithoutExtension}{fileExtension}", bytes); // non size flexible
             var stream = File.OpenWrite($"{path}\\{fileNameWithoutExtension}{fileExtension}");
-            stream.Write(bytes, 0, readBytes); // size flexible
+            stream.Write(buffer, 0, readBytes); // size flexible
 
             MessageBox.Show($"File is downloaded to {path}!");
         }

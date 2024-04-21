@@ -14,15 +14,15 @@ namespace Client
 {
     public partial class VideoViewForm : Form
     {
-        private byte[] bytes;
+        private byte[] buffer;
         private int readBytes;
         private string fileName;
         private string fileExtension;
         WMPLib.WindowsMediaPlayer Player;
 
-        public VideoViewForm(byte[] bytes, int readBytes, string username, string fileName, string fileExtension)
+        public VideoViewForm(byte[] buffer, int readBytes, string username, string fileName, string fileExtension)
         {
-            this.bytes = bytes;
+            this.buffer = buffer;
             this.readBytes = readBytes;
             this.fileName = fileName;
             this.fileExtension = fileExtension;
@@ -39,7 +39,7 @@ namespace Client
 
             // File.WriteAllBytes($"{path}\\tempVideo{fileExtension}", bytes); // non size flexible
             var stream = File.OpenWrite($"{path}\\tempVideo{fileExtension}");
-            stream.Write(bytes, 0, readBytes); // size flexible
+            stream.Write(buffer, 0, readBytes); // size flexible
 
             // then play it
             PlayFile($"{path}\\tempVideo{fileExtension}");
@@ -56,7 +56,7 @@ namespace Client
 
             // File.WriteAllBytes($"{path}\\{fileNameWithoutExtension}{fileExtension}", bytes); // non size flexible
             var stream = File.OpenWrite($"{path}\\{fileNameWithoutExtension}{fileExtension}");
-            stream.Write(bytes, 0, readBytes); // size flexible
+            stream.Write(buffer, 0, readBytes); // size flexible
 
             MessageBox.Show($"Video is downloaded to {path}!");
         }

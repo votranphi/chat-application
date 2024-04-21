@@ -21,8 +21,9 @@ namespace Server
         private delegate void SafeCallDelegate(string text);
         private delegate void SafeCallDelegateImage(Bitmap bmp);
 
-        // maximum size of image is 524288 bytes
-        byte[] bytes = new byte[10000000];
+        // maximum size of buffer is 100MB
+        private static int buffer_size = 104857600;
+        private byte[] buffer = new byte[buffer_size];
 
         public ServerForm()
         {
@@ -246,7 +247,7 @@ namespace Server
                     // Thread.Sleep(10000);
 
                     // wait for client side to complete writing data
-                    streamReader.BaseStream.BeginRead(bytes, 0, bytes.Length, new AsyncCallback(onImageRead), new object[] { streamReader, splitString[0], splitString[1], splitString[2], splitString[3] });
+                    streamReader.BaseStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(onImageRead), new object[] { streamReader, splitString[0], splitString[1], splitString[2], splitString[3] });
 
                     continue;
                 }
@@ -262,7 +263,7 @@ namespace Server
                     // Thread.Sleep(10000);
 
                     // wait for client side to complete writing data
-                    streamReader.BaseStream.BeginRead(bytes, 0, bytes.Length, new AsyncCallback(onVideoRead), new object[] { streamReader, splitString[0], splitString[1], splitString[2], splitString[3] });
+                    streamReader.BaseStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(onVideoRead), new object[] { streamReader, splitString[0], splitString[1], splitString[2], splitString[3] });
 
                     continue;
                 }
@@ -278,7 +279,7 @@ namespace Server
                     // Thread.Sleep(10000);
 
                     // wait for client side to complete writing data
-                    streamReader.BaseStream.BeginRead(bytes, 0, bytes.Length, new AsyncCallback(onFileRead), new object[] { streamReader, splitString[0], splitString[1], splitString[2], splitString[3] });
+                    streamReader.BaseStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(onFileRead), new object[] { streamReader, splitString[0], splitString[1], splitString[2], splitString[3] });
 
                     continue;
                 }
@@ -395,7 +396,7 @@ namespace Server
                 receiverSW.WriteLine("<Image>");
                 receiverSW.WriteLine($"{sender}|{fileName}|{fileExtension}");
                 Thread.Sleep(500); // wait for the client to receive two messages above
-                receiverSW.BaseStream.BeginWrite(bytes, 0, readBytes, new AsyncCallback(onWrite), receiverSW);
+                receiverSW.BaseStream.BeginWrite(buffer, 0, readBytes, new AsyncCallback(onWrite), receiverSW);
             }
             else
             // if group's name is in GROUP list, then do sending the message to users in it
@@ -412,7 +413,7 @@ namespace Server
                         receiverSW.WriteLine("<Image>");
                         receiverSW.WriteLine($"{sender}|{fileName}|{fileExtension}");
                         Thread.Sleep(500); // wait for the client to receive two messages above
-                        receiverSW.BaseStream.BeginWrite(bytes, 0, readBytes, new AsyncCallback(onWrite), receiverSW);
+                        receiverSW.BaseStream.BeginWrite(buffer, 0, readBytes, new AsyncCallback(onWrite), receiverSW);
                     }
                 }
             }
@@ -437,7 +438,7 @@ namespace Server
                 receiverSW.WriteLine("<Video>");
                 receiverSW.WriteLine($"{sender}|{fileName}|{fileExtension}");
                 Thread.Sleep(500); // wait for the client to receive two messages above
-                receiverSW.BaseStream.BeginWrite(bytes, 0, readBytes, new AsyncCallback(onWrite), receiverSW);
+                receiverSW.BaseStream.BeginWrite(buffer, 0, readBytes, new AsyncCallback(onWrite), receiverSW);
             }
             else
             // if group's name is in GROUP list, then do sending the message to users in it
@@ -454,7 +455,7 @@ namespace Server
                         receiverSW.WriteLine("<Video>");
                         receiverSW.WriteLine($"{sender}|{fileName}|{fileExtension}");
                         Thread.Sleep(500); // wait for the client to receive two messages above
-                        receiverSW.BaseStream.BeginWrite(bytes, 0, readBytes, new AsyncCallback(onWrite), receiverSW);
+                        receiverSW.BaseStream.BeginWrite(buffer, 0, readBytes, new AsyncCallback(onWrite), receiverSW);
                     }
                 }
             }
@@ -479,7 +480,7 @@ namespace Server
                 receiverSW.WriteLine("<File>");
                 receiverSW.WriteLine($"{sender}|{fileName}|{fileExtension}");
                 Thread.Sleep(500); // wait for the client to receive two messages above
-                receiverSW.BaseStream.BeginWrite(bytes, 0, readBytes, new AsyncCallback(onWrite), receiverSW);
+                receiverSW.BaseStream.BeginWrite(buffer, 0, readBytes, new AsyncCallback(onWrite), receiverSW);
             }
             else
             // if group's name is in GROUP list, then do sending the message to users in it
@@ -496,7 +497,7 @@ namespace Server
                         receiverSW.WriteLine("<File>");
                         receiverSW.WriteLine($"{sender}|{fileName}|{fileExtension}");
                         Thread.Sleep(500); // wait for the client to receive two messages above
-                        receiverSW.BaseStream.BeginWrite(bytes, 0, readBytes, new AsyncCallback(onWrite), receiverSW);
+                        receiverSW.BaseStream.BeginWrite(buffer, 0, readBytes, new AsyncCallback(onWrite), receiverSW);
                     }
                 }
             }
