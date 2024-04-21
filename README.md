@@ -1,6 +1,6 @@
 # Chat application UI
 
-This branch contains the app UI which is use in the main branch. You can find it in .designer file in this branch.
+This branch contains the app UI which is used in the main branch. You can find it in .designer file in this branch.
 
 ## Description
 
