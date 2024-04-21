@@ -98,7 +98,7 @@ namespace Client
                     streamReader.BaseStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(onImageRead), new object[] { streamReader, splitString[1], splitString[2] });
 
                     // update the received message to the RichTextBox
-                    AppendRichTextBox(splitString[0], username, $"Sent {username} an image", "");
+                    AppendRichTextBox(splitString[0], username, $"Sent {username} an image. Waiting for image's opening...", "");
 
                     continue;
                 }
@@ -115,7 +115,7 @@ namespace Client
                     streamReader.BaseStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(onVideoRead), new object[] { streamReader, splitString[1], splitString[2] });
 
                     // update the received message to the RichTextBox
-                    AppendRichTextBox(splitString[0], username, $"Sent {username} a video", "");
+                    AppendRichTextBox(splitString[0], username, $"Sent {username} a video. Waiting for video's opening...", "");
 
                     continue;
                 }
@@ -132,7 +132,7 @@ namespace Client
                     streamReader.BaseStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(onFileRead), new object[] { streamReader, splitString[1], splitString[2] });
 
                     // update the received message to the RichTextBox
-                    AppendRichTextBox(splitString[0], username, $"Sent {username} a *{splitString[2]} file", "");
+                    AppendRichTextBox(splitString[0], username, $"Sent {username} a *{splitString[2]} file. Waiting for file's opening...", "");
 
                     continue;
                 }
@@ -237,7 +237,7 @@ namespace Client
                 // send the signal message and byte array to server
                 streamWriter.WriteLine("<Image>");
                 streamWriter.WriteLine($"{username}|{tbReceiver.Text}|{fi.Name}|{fi.Extension}");
-                Thread.Sleep(500); // wait for the server for receiving two messages above
+                Thread.Sleep(500); // wait for the server to receive two messages above
                 streamWriter.BaseStream.BeginWrite(bytes, 0, bytes.Length, new AsyncCallback(onWrite), streamWriter);
             }
         }
@@ -245,7 +245,7 @@ namespace Client
         private void btnVideo_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "Video (*.mp4)|*.mp4";
+            ofd.Filter = "Video files|*.mp4;*.mov;*.avi;*.wmv;*.m4a";
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
@@ -259,7 +259,7 @@ namespace Client
                 // send the signal message and byte array to server
                 streamWriter.WriteLine("<Video>");
                 streamWriter.WriteLine($"{username}|{tbReceiver.Text}|{fi.Name}|{fi.Extension}");
-                Thread.Sleep(500); // wait for the server for receiving two messages above
+                Thread.Sleep(500); // wait for the server to receive two messages above
                 streamWriter.BaseStream.BeginWrite(bytes, 0, bytes.Length, new AsyncCallback(onWrite), streamWriter);
             }
         }
@@ -267,7 +267,7 @@ namespace Client
         private void btnFile_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "Files|*.docx;*.doc;*.pdf;*.html;*.css;*.js,*.ppt;*.pptx;*.xls;*.xlsx;*.txt";
+            ofd.Filter = "All files|*.*";
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
@@ -281,7 +281,7 @@ namespace Client
                 // send the signal message and byte array to server
                 streamWriter.WriteLine("<File>");
                 streamWriter.WriteLine($"{username}|{tbReceiver.Text}|{fi.Name}|{fi.Extension}");
-                Thread.Sleep(500); // wait for the server for receiving two messages above
+                Thread.Sleep(500); // wait for the server to receive two messages above
                 streamWriter.BaseStream.BeginWrite(bytes, 0, bytes.Length, new AsyncCallback(onWrite), streamWriter);
             }
         }

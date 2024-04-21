@@ -46,6 +46,7 @@ namespace Client
             // download the file to C:\Users\USER_MACHINE_NAME\Downloads
             string path = Environment.GetEnvironmentVariable("TEMP");
 
+            // go to Downloads folder
             path += "\\..\\..\\..\\Downloads\\";
 
             string fileNameWithoutExtension = fileName.Replace(fileExtension, "");

@@ -19,7 +19,6 @@ namespace Server
         private Dictionary<string, bool> STATUS = new Dictionary<string, bool>();
 
         private delegate void SafeCallDelegate(string text);
-        private delegate void SafeCallDelegateImage(Bitmap bmp);
 
         // maximum size of buffer is 100MB
         private static int buffer_size = 104857600;
