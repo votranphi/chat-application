@@ -339,6 +339,11 @@ namespace Client
             btnVoice.BackColor = Color.CornflowerBlue;
         }
 
+        private void ClientForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            streamWriter.WriteLine("<Logout>");
+        }
+
         private void onImageRead(IAsyncResult ar)
         {
             object[] objects = (object[])ar.AsyncState;
@@ -454,17 +459,6 @@ namespace Client
 
                 statusAndMsg.AppendText(Environment.NewLine);
             }));
-        }
-
-        private const int CP_NOCLOSE_BUTTON = 0x200;
-        protected override CreateParams CreateParams
-        {
-            get
-            {
-                CreateParams myCp = base.CreateParams;
-                myCp.ClassStyle = myCp.ClassStyle | CP_NOCLOSE_BUTTON;
-                return myCp;
-            }
         }
 
         #region UpdateThreadSafe

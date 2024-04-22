@@ -165,7 +165,7 @@ namespace Server
             StreamWriter streamWriter = new StreamWriter(_client.GetStream());
             streamWriter.AutoFlush = true;
 
-            while (isServerRunning)
+            while (STATUS[username] == true)
             {
                 string msgFromClient = streamReader.ReadLine();
 

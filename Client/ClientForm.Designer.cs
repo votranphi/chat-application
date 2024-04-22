@@ -299,6 +299,7 @@ namespace Client
             Controls.Add(pictureBox4);
             Name = "ClientForm";
             Text = "ClientForm";
+            FormClosing += ClientForm_FormClosing;
             Load += ClientForm_Load;
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
