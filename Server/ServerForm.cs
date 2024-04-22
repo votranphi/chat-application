@@ -392,7 +392,7 @@ namespace Server
                 StreamWriter receiverSW = new StreamWriter(CLIENT[receiver].GetStream());
                 receiverSW.AutoFlush = true;
                 receiverSW.WriteLine("<Image>");
-                receiverSW.WriteLine($"{sender}|{fileName}");
+                receiverSW.WriteLine($"{sender}|{receiver}|{fileName}");
                 Thread.Sleep(500); // wait for the client to receive two messages above
                 receiverSW.BaseStream.BeginWrite(buffer, 0, readBytes, new AsyncCallback(onWrite), receiverSW);
             }
@@ -409,7 +409,7 @@ namespace Server
                         StreamWriter receiverSW = new StreamWriter(CLIENT[user].GetStream());
                         receiverSW.AutoFlush = true;
                         receiverSW.WriteLine("<Image>");
-                        receiverSW.WriteLine($"{sender}|{fileName}");
+                        receiverSW.WriteLine($"{sender}|{receiver}|{fileName}");
                         Thread.Sleep(500); // wait for the client to receive two messages above
                         receiverSW.BaseStream.BeginWrite(buffer, 0, readBytes, new AsyncCallback(onWrite), receiverSW);
                     }
@@ -434,7 +434,7 @@ namespace Server
                 StreamWriter receiverSW = new StreamWriter(CLIENT[receiver].GetStream());
                 receiverSW.AutoFlush = true;
                 receiverSW.WriteLine("<Video>");
-                receiverSW.WriteLine($"{sender}|{fileName}|{fileExtension}");
+                receiverSW.WriteLine($"{sender}|{receiver}|{fileName}|{fileExtension}");
                 Thread.Sleep(500); // wait for the client to receive two messages above
                 receiverSW.BaseStream.BeginWrite(buffer, 0, readBytes, new AsyncCallback(onWrite), receiverSW);
             }
@@ -451,7 +451,7 @@ namespace Server
                         StreamWriter receiverSW = new StreamWriter(CLIENT[user].GetStream());
                         receiverSW.AutoFlush = true;
                         receiverSW.WriteLine("<Video>");
-                        receiverSW.WriteLine($"{sender}|{fileName}|{fileExtension}");
+                        receiverSW.WriteLine($"{sender}|{receiver}|{fileName}|{fileExtension}");
                         Thread.Sleep(500); // wait for the client to receive two messages above
                         receiverSW.BaseStream.BeginWrite(buffer, 0, readBytes, new AsyncCallback(onWrite), receiverSW);
                     }
@@ -476,7 +476,7 @@ namespace Server
                 StreamWriter receiverSW = new StreamWriter(CLIENT[receiver].GetStream());
                 receiverSW.AutoFlush = true;
                 receiverSW.WriteLine("<File>");
-                receiverSW.WriteLine($"{sender}|{fileName}|{fileExtension}");
+                receiverSW.WriteLine($"{sender}|{receiver}|{fileName}|{fileExtension}");
                 Thread.Sleep(500); // wait for the client to receive two messages above
                 receiverSW.BaseStream.BeginWrite(buffer, 0, readBytes, new AsyncCallback(onWrite), receiverSW);
             }
@@ -493,7 +493,7 @@ namespace Server
                         StreamWriter receiverSW = new StreamWriter(CLIENT[user].GetStream());
                         receiverSW.AutoFlush = true;
                         receiverSW.WriteLine("<File>");
-                        receiverSW.WriteLine($"{sender}|{fileName}|{fileExtension}");
+                        receiverSW.WriteLine($"{sender}|{receiver}|{fileName}|{fileExtension}");
                         Thread.Sleep(500); // wait for the client to receive two messages above
                         receiverSW.BaseStream.BeginWrite(buffer, 0, readBytes, new AsyncCallback(onWrite), receiverSW);
                     }

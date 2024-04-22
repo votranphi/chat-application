@@ -90,15 +90,15 @@ namespace Client
                 if (msgFromServer == "<Image>")
                 {
                     string senderAndFilename = streamReader.ReadLine();
-                    // splitString[0] is sender's name, splitString[1] is file's name
+                    // splitString[0] is sender's name, splitString[1] is receiver's name, splitString[2] is file's name
                     string[] splitString = senderAndFilename.Split('|');
 
                     // Thread.Sleep(10000);
 
-                    streamReader.BaseStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(onImageRead), new object[] { streamReader, splitString[1] });
+                    streamReader.BaseStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(onImageRead), new object[] { streamReader, splitString[2] });
 
                     // update the received message to the RichTextBox
-                    AppendRichTextBox(splitString[0], username, $"Sent {username} an image. Waiting for image's opening...", "");
+                    AppendRichTextBox(splitString[0], splitString[1], $"Sent {username} an image. Waiting for image's opening...", "");
 
                     continue;
                 }
@@ -107,15 +107,15 @@ namespace Client
                 if (msgFromServer == "<Video>")
                 {
                     string senderAndFilenameAndFileExtension = streamReader.ReadLine();
-                    // splitString[0] is sender's name, splitString[1] is file's name, splitString[2] is file's extension
+                    // splitString[0] is sender's name, splitString[1] is receiver's name, splitString[2] is file's name, splitString[3] is file's extension
                     string[] splitString = senderAndFilenameAndFileExtension.Split('|');
 
                     // Thread.Sleep(10000);
 
-                    streamReader.BaseStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(onVideoRead), new object[] { streamReader, splitString[1], splitString[2] });
+                    streamReader.BaseStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(onVideoRead), new object[] { streamReader, splitString[2], splitString[3] });
 
                     // update the received message to the RichTextBox
-                    AppendRichTextBox(splitString[0], username, $"Sent {username} a video. Waiting for video's opening...", "");
+                    AppendRichTextBox(splitString[0], splitString[1], $"Sent {splitString[1]} a video. Waiting for video's opening...", "");
 
                     continue;
                 }
@@ -124,15 +124,15 @@ namespace Client
                 if (msgFromServer == "<File>")
                 {
                     string senderAndFilenameAndFileExtension = streamReader.ReadLine();
-                    // splitString[0] is sender's name, splitString[1] is file's name, splitString[2] is file's extension
+                    // splitString[0] is sender's name, splitString[1] is receiver's name, splitString[2] is file's name, splitString[3] is file's extension
                     string[] splitString = senderAndFilenameAndFileExtension.Split('|');
 
                     // Thread.Sleep(10000);
 
-                    streamReader.BaseStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(onFileRead), new object[] { streamReader, splitString[1] });
+                    streamReader.BaseStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(onFileRead), new object[] { streamReader, splitString[2] });
 
                     // update the received message to the RichTextBox
-                    AppendRichTextBox(splitString[0], username, $"Sent {username} a *{splitString[2]} file. Waiting for file's opening...", "");
+                    AppendRichTextBox(splitString[0], splitString[1], $"Sent {splitString[1]} a *{splitString[3]} file. Waiting for file's opening...", "");
 
                     continue;
                 }
