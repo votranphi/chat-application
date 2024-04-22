@@ -98,7 +98,7 @@ namespace Client
                     streamReader.BaseStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(onImageRead), new object[] { streamReader, splitString[2] });
 
                     // update the received message to the RichTextBox
-                    AppendRichTextBox(splitString[0], splitString[1], $"Sent {username} an image. Waiting for image's opening...", "");
+                    AppendRichTextBox(splitString[0], splitString[1], $"Sent {splitString[1]} an image. Waiting for image's opening...", "");
 
                     continue;
                 }

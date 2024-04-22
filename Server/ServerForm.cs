@@ -112,6 +112,10 @@ namespace Server
                                 streamWriter.WriteLine("<Success>");
                                 // change the user's status in STATUS list to true
                                 STATUS[splitString[0]] = true;
+                                // remove the old TcpClient in CLIENT list when user Signed Up successfully
+                                CLIENT.Remove(splitString[0]);
+                                // add the new TcpClient in CLIENT list when user Logged In successfully
+                                CLIENT.Add(splitString[0], _client);
 
                                 // send new online user signal to other clients
                                 foreach (string user in USER.Keys)
