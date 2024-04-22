@@ -61,9 +61,9 @@ namespace Client
             tbPassword.Font = new Font("Segoe UI", 14F, FontStyle.Regular, GraphicsUnit.Point);
             tbPassword.Location = new Point(402, 435);
             tbPassword.Name = "tbPassword";
+            tbPassword.PasswordChar = '*';
             tbPassword.Size = new Size(216, 32);
             tbPassword.TabIndex = 3;
-            tbPassword.PasswordChar = '*';
             // 
             // label1
             // 
@@ -206,7 +206,7 @@ namespace Client
             MaximumSize = new Size(1000, 700);
             MinimumSize = new Size(1000, 700);
             Name = "LoginForm";
-            Text = "Chat";
+            Text = "LoginForm";
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
             PerformLayout();

@@ -141,7 +141,7 @@ namespace Client
             MaximumSize = new Size(600, 600);
             MinimumSize = new Size(600, 600);
             Name = "FileViewForm";
-            Text = "ImageViewForm";
+            Text = "FileViewForm";
             Load += FileViewForm_Load;
             ((System.ComponentModel.ISupportInitialize)pb).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();

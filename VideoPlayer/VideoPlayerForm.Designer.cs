@@ -121,7 +121,7 @@ namespace VideoPlayer
             this.MaximumSize = new System.Drawing.Size(517, 525);
             this.MinimumSize = new System.Drawing.Size(517, 525);
             this.Name = "VideoPlayerForm";
-            this.Text = "ImageViewForm";
+            this.Text = "VideoViewForm";
             this.Load += new System.EventHandler(this.VideoPlayer_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
