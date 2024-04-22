@@ -161,10 +161,17 @@ namespace Client
                     continue;
                 }
 
-                // 
+                // warning if group's name exists
                 if (msgFromServer == "<Group_Exists>")
                 {
                     MessageBox.Show("Group existed!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    continue;
+                }
+
+                // warning if group's name is a username
+                if (msgFromServer == "<Gr_Is_Usr>")
+                {
+                    MessageBox.Show("Group's name cannot be a username!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     continue;
                 }
             }
@@ -289,7 +296,7 @@ namespace Client
         private void emojiCB_SelectedIndexChanged(object sender, EventArgs e)
         {
             msgToSend.Text += emojiCB.Text;
-            emojiCB.SelectedIndex = -1;
+            emojiCB.Text = "😀";
         }
 
         private void btnCreateGroup_Click(object sender, EventArgs e)

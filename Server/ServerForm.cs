@@ -211,6 +211,13 @@ namespace Server
                         continue;
                     }
 
+                    // check if the group's name is also a existed username
+                    if (USER.ContainsKey(splitString[0]))
+                    {
+                        streamWriter.WriteLine("<Gr_Is_Usr>"); // Group_Name_Is_User_Name
+                        continue;
+                    }
+
                     // delete all leading and trailing white-spaces then add to userList
                     List<string> userList = new List<string>();
                     for (int i = 0; i < _username.Length; i++)

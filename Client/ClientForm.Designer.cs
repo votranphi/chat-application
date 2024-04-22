@@ -65,9 +65,9 @@ namespace Client
             // msgToSend
             // 
             msgToSend.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            msgToSend.Location = new Point(542, 594);
+            msgToSend.Location = new Point(551, 594);
             msgToSend.Name = "msgToSend";
-            msgToSend.Size = new Size(374, 29);
+            msgToSend.Size = new Size(365, 29);
             msgToSend.TabIndex = 0;
             msgToSend.KeyPress += msgToSend_KeyPress;
             // 
@@ -192,13 +192,15 @@ namespace Client
             // emojiCB
             // 
             emojiCB.AllowDrop = true;
+            emojiCB.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
             emojiCB.FormattingEnabled = true;
-            emojiCB.ItemHeight = 15;
+            emojiCB.ItemHeight = 21;
             emojiCB.Items.AddRange(new object[] { "😁", "😂", "\U0001f923", "😅", "😆", "😍", "😘", "\U0001f970", "👍", "❤" });
             emojiCB.Location = new Point(498, 594);
             emojiCB.Name = "emojiCB";
-            emojiCB.Size = new Size(38, 23);
+            emojiCB.Size = new Size(47, 29);
             emojiCB.TabIndex = 14;
+            emojiCB.Text = "😀";
             emojiCB.SelectedIndexChanged += emojiCB_SelectedIndexChanged;
             // 
             // dgvUser
