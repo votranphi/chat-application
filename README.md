@@ -35,7 +35,7 @@ After running the Server project, you will need to find out the Port number and 
 - Sign up new account, log in and log out
 
 ## Credits
-This is the final project that was done by Group 4 of NT106.O22 - Basic Network Programming, University of Information Technology (UIT). Here is the group's member:
+This is the final project that was done by Group 4 of NT106.O22 - Fundamental Network Programming, University of Information Technology (UIT). Here is the group's member:
 - Vo Tran Phi - 22521081  
 Github link: [votranphi](https://github.com/votranphi) 
 - Le Duong Minh Phuc - 22521116  
