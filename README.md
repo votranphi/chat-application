@@ -41,4 +41,4 @@ Github link: [votranphi](https://github.com/votranphi)
 - Le Duong Minh Phuc - 22521116  
 Github link: [minhphuc2544](https://github.com/minhphuc2544)
 - Pham Tan Tai - 22521283  
-Github link: [terex2710](https://github.com/terex2710)
+Github link: [taicyberr](https://github.com/taicyberr)
