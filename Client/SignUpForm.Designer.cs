@@ -39,10 +39,6 @@ namespace Client
             label4 = new Label();
             btnSignUp = new Button();
             label6 = new Label();
-            label3 = new Label();
-            tbPort = new TextBox();
-            label5 = new Label();
-            tbServerIP = new TextBox();
             label7 = new Label();
             tbPassConf = new TextBox();
             lblLogin = new Label();
@@ -51,7 +47,7 @@ namespace Client
             // tbUsername
             // 
             tbUsername.Font = new Font("Segoe UI", 14F, FontStyle.Regular, GraphicsUnit.Point);
-            tbUsername.Location = new Point(425, 292);
+            tbUsername.Location = new Point(427, 227);
             tbUsername.Name = "tbUsername";
             tbUsername.Size = new Size(216, 32);
             tbUsername.TabIndex = 2;
@@ -59,7 +55,7 @@ namespace Client
             // tbPassword
             // 
             tbPassword.Font = new Font("Segoe UI", 14F, FontStyle.Regular, GraphicsUnit.Point);
-            tbPassword.Location = new Point(425, 345);
+            tbPassword.Location = new Point(427, 280);
             tbPassword.Name = "tbPassword";
             tbPassword.PasswordChar = '*';
             tbPassword.Size = new Size(216, 32);
@@ -70,7 +66,7 @@ namespace Client
             label1.AutoSize = true;
             label1.Font = new Font("Segoe UI", 14F, FontStyle.Regular, GraphicsUnit.Point);
             label1.Image = Properties.Resources.form_background;
-            label1.Location = new Point(255, 295);
+            label1.Location = new Point(257, 230);
             label1.Name = "label1";
             label1.Size = new Size(97, 25);
             label1.TabIndex = 2;
@@ -81,7 +77,7 @@ namespace Client
             label2.AutoSize = true;
             label2.Font = new Font("Segoe UI", 14F, FontStyle.Regular, GraphicsUnit.Point);
             label2.Image = Properties.Resources.form_background;
-            label2.Location = new Point(255, 348);
+            label2.Location = new Point(257, 283);
             label2.Name = "label2";
             label2.Size = new Size(91, 25);
             label2.TabIndex = 3;
@@ -90,7 +86,7 @@ namespace Client
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(486, 407);
+            label4.Location = new Point(488, 342);
             label4.Name = "label4";
             label4.Size = new Size(0, 15);
             label4.TabIndex = 7;
@@ -100,7 +96,7 @@ namespace Client
             btnSignUp.BackColor = SystemColors.Highlight;
             btnSignUp.Cursor = Cursors.Hand;
             btnSignUp.Font = new Font("Segoe UI", 14F, FontStyle.Regular, GraphicsUnit.Point);
-            btnSignUp.Location = new Point(461, 461);
+            btnSignUp.Location = new Point(463, 396);
             btnSignUp.Name = "btnSignUp";
             btnSignUp.Size = new Size(131, 40);
             btnSignUp.TabIndex = 5;
@@ -113,58 +109,18 @@ namespace Client
             label6.AutoSize = true;
             label6.Font = new Font("Segoe UI Semibold", 24F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point);
             label6.Image = Properties.Resources.form_background;
-            label6.Location = new Point(379, 114);
+            label6.Location = new Point(378, 157);
             label6.Name = "label6";
             label6.Size = new Size(303, 45);
             label6.TabIndex = 10;
             label6.Text = "Create new account";
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Font = new Font("Segoe UI", 14F, FontStyle.Regular, GraphicsUnit.Point);
-            label3.Image = Properties.Resources.form_background;
-            label3.Location = new Point(255, 242);
-            label3.Name = "label3";
-            label3.Size = new Size(46, 25);
-            label3.TabIndex = 12;
-            label3.Text = "Port";
-            // 
-            // tbPort
-            // 
-            tbPort.Font = new Font("Segoe UI", 14F, FontStyle.Regular, GraphicsUnit.Point);
-            tbPort.Location = new Point(425, 239);
-            tbPort.Name = "tbPort";
-            tbPort.Size = new Size(216, 32);
-            tbPort.TabIndex = 1;
-            tbPort.Text = "11000";
-            // 
-            // label5
-            // 
-            label5.AutoSize = true;
-            label5.Font = new Font("Segoe UI", 14F, FontStyle.Regular, GraphicsUnit.Point);
-            label5.Image = Properties.Resources.form_background;
-            label5.Location = new Point(255, 190);
-            label5.Name = "label5";
-            label5.Size = new Size(86, 25);
-            label5.TabIndex = 14;
-            label5.Text = "Server IP";
-            // 
-            // tbServerIP
-            // 
-            tbServerIP.Font = new Font("Segoe UI", 14F, FontStyle.Regular, GraphicsUnit.Point);
-            tbServerIP.Location = new Point(425, 187);
-            tbServerIP.Name = "tbServerIP";
-            tbServerIP.Size = new Size(216, 32);
-            tbServerIP.TabIndex = 0;
-            tbServerIP.Text = "127.0.0.1";
             // 
             // label7
             // 
             label7.AutoSize = true;
             label7.Font = new Font("Segoe UI", 14F, FontStyle.Regular, GraphicsUnit.Point);
             label7.Image = Properties.Resources.form_background;
-            label7.Location = new Point(255, 399);
+            label7.Location = new Point(257, 334);
             label7.Name = "label7";
             label7.Size = new Size(164, 25);
             label7.TabIndex = 16;
@@ -173,7 +129,7 @@ namespace Client
             // tbPassConf
             // 
             tbPassConf.Font = new Font("Segoe UI", 14F, FontStyle.Regular, GraphicsUnit.Point);
-            tbPassConf.Location = new Point(425, 396);
+            tbPassConf.Location = new Point(427, 331);
             tbPassConf.Name = "tbPassConf";
             tbPassConf.PasswordChar = '*';
             tbPassConf.Size = new Size(216, 32);
@@ -185,7 +141,7 @@ namespace Client
             lblLogin.Cursor = Cursors.Hand;
             lblLogin.Font = new Font("Segoe UI", 12F, FontStyle.Italic, GraphicsUnit.Point);
             lblLogin.Image = Properties.Resources.form_background;
-            lblLogin.Location = new Point(402, 520);
+            lblLogin.Location = new Point(404, 455);
             lblLogin.Name = "lblLogin";
             lblLogin.Size = new Size(239, 21);
             lblLogin.TabIndex = 17;
@@ -202,10 +158,6 @@ namespace Client
             Controls.Add(lblLogin);
             Controls.Add(label7);
             Controls.Add(tbPassConf);
-            Controls.Add(label5);
-            Controls.Add(tbServerIP);
-            Controls.Add(label3);
-            Controls.Add(tbPort);
             Controls.Add(label6);
             Controls.Add(btnSignUp);
             Controls.Add(label4);
@@ -230,10 +182,6 @@ namespace Client
         private Label label4;
         private Button btnSignUp;
         private Label label6;
-        private Label label3;
-        private TextBox tbPort;
-        private Label label5;
-        private TextBox tbServerIP;
         private Label label7;
         private TextBox tbPassConf;
         private Label lblLogin;

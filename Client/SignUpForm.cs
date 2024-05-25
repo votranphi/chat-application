@@ -60,7 +60,7 @@ namespace Client
         private void btnSignUp_Click(object sender, EventArgs e)
         {
             // exceptions catching
-            if (tbUsername.Text == "" || tbPassword.Text == "" || tbServerIP.Text == "" || tbPort.Text == "" || tbPassConf.Text == "")
+            if (tbUsername.Text == "" || tbPassword.Text == "" || tbPassConf.Text == "")
             {
                 MessageBox.Show("Empty Fields!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -74,7 +74,7 @@ namespace Client
 
             // implementation
             tcpClient = new TcpClient();
-            ipep = new IPEndPoint(IPAddress.Parse(tbServerIP.Text), int.Parse(tbPort.Text));
+            ipep = new IPEndPoint(IPAddress.Parse("20.187.144.77"), 11000);
             try
             {
                 tcpClient.Connect(ipep);
