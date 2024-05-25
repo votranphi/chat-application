@@ -1,11 +1,14 @@
-﻿using System.Net.Sockets;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Sockets;
 using System.Net;
-using System.Net.Http;
-using Microsoft.VisualBasic.ApplicationServices;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Server
+namespace Server_Console
 {
-    public partial class ServerForm : Form
+    internal class Server_Class
     {
         private TcpListener tcpListener;
         private bool isServerRunning = false;
@@ -24,15 +27,15 @@ namespace Server
         private static int buffer_size = 104857600;
         private byte[] buffer = new byte[buffer_size];
 
-        public ServerForm()
+        public Server_Class()
         {
-            InitializeComponent();
+            listenBtn_Click();
         }
 
         // lang nghe coi co TCPclient nao ket noi toi khong
         private void listen()
         {
-            tcpListener = new TcpListener(new IPEndPoint(IPAddress.Any, int.Parse(portInput.Text)));
+            tcpListener = new TcpListener(new IPEndPoint(IPAddress.Any, 11000));
             tcpListener.Start();
 
             while (isServerRunning)
@@ -81,7 +84,7 @@ namespace Server
 
                         // print the notifications to richtextbox
                         IPEndPoint remoteIpEndPoint = _client.Client.RemoteEndPoint as IPEndPoint; // use to get the client's IP and client's port
-                        UpdateClientsStatusThreadSafe($"[{DateTime.Now}] {splitString[0]}({remoteIpEndPoint.Address}:{remoteIpEndPoint.Port}) has just signed up and logged in!\n");
+                        Console.WriteLine($"[{DateTime.Now}] {splitString[0]}({remoteIpEndPoint.Address}:{remoteIpEndPoint.Port}) has just signed up and logged in!\n");
                         // new thread for the client has just signed up successfully
                         Thread receiveThread = new Thread(new ThreadStart(() => receiveFromClient(splitString[0])));
                         receiveThread.Start();
@@ -129,7 +132,7 @@ namespace Server
 
                                 // print the notifications to richtextbox
                                 IPEndPoint remoteIpEndPoint = _client.Client.RemoteEndPoint as IPEndPoint; // use to get the client's IP and client's port
-                                UpdateClientsStatusThreadSafe($"[{DateTime.Now}] {splitString[0]}({remoteIpEndPoint.Address}:{remoteIpEndPoint.Port}) has just logged in!\n");
+                                Console.WriteLine($"[{DateTime.Now}] {splitString[0]}({remoteIpEndPoint.Address}:{remoteIpEndPoint.Port}) has just logged in!\n");
                                 // new thread for the client has just logged in successfully
                                 Thread receiveThread = new Thread(new ThreadStart(() => receiveFromClient(splitString[0])));
                                 receiveThread.Start();
@@ -191,7 +194,7 @@ namespace Server
 
                     // use to get the client's IP and client's port
                     IPEndPoint remoteIpEndPoint = _client.Client.RemoteEndPoint as IPEndPoint;
-                    UpdateClientsStatusThreadSafe($"[{DateTime.Now}] {username}({remoteIpEndPoint.Address}:{remoteIpEndPoint.Port}) has just logged out!\n");
+                    Console.WriteLine($"[{DateTime.Now}] {username}({remoteIpEndPoint.Address}:{remoteIpEndPoint.Port}) has just logged out!\n");
                     break;
                 }
 
@@ -241,7 +244,7 @@ namespace Server
                     }
 
                     // update group's creation to status RTB
-                    UpdateClientsStatusThreadSafe($"[{DateTime.Now}] {splitString[0]} group has been created with users: {splitString[1]}!\n");
+                    Console.WriteLine($"[{DateTime.Now}] {splitString[0]} group has been created with users: {splitString[1]}!\n");
 
                     continue;
                 }
@@ -332,15 +335,13 @@ namespace Server
             }
         }
 
-        private void listenBtn_Click(object sender, EventArgs e)
+        private void listenBtn_Click()
         {
             // BUG IS IN THERE WHEN CLICK ON DISCONNECT BUTTON IN SERVER'S FORM
             if (isServerRunning)
             {
                 isServerRunning = false;
                 tcpListener.Stop();
-                statusAndMsg.Text += $"[{DateTime.Now}] Stop listening on port {portInput.Text}\n";
-                listenBtn.Text = "Listen";
             }
             else
             {
@@ -348,8 +349,7 @@ namespace Server
                 Thread listenThread = new Thread(this.listen);
                 listenThread.Start();
                 listenThread.IsBackground = true;
-                statusAndMsg.Text += $"[{DateTime.Now}] Start listening on port {portInput.Text}\n";
-                listenBtn.Text = "Stop";
+                Console.WriteLine($"[{DateTime.Now}] Start listening on port 11000\n");
             }
         }
 
@@ -517,22 +517,5 @@ namespace Server
             StreamWriter streamWriter = (StreamWriter)ar.AsyncState;
             streamWriter.BaseStream.EndWrite(ar);
         }
-
-        #region UpdateThreadSafe
-
-        private void UpdateClientsStatusThreadSafe(string text)
-        {
-            if (statusAndMsg.InvokeRequired)
-            {
-                var d = new SafeCallDelegate(UpdateClientsStatusThreadSafe);
-                statusAndMsg.Invoke(d, new object[] { text });
-            }
-            else
-            {
-                statusAndMsg.Text += text;
-            }
-        }
-
-        #endregion
     }
 }
