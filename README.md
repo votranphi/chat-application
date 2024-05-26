@@ -1,11 +1,11 @@
-# Chat application in LAN using C#
+# Chat application in WAN using C#
 
-This is an simple c# application using .NET framework that allows you to chat with other users in LAN by connecting to the server that is hosting in the same LAN. It can help user to send text messages, pictures, videos and files up to 100MB.
+This is an upgraded version of the chat application for LAN. We have modified the server functionality; instead of running it on a local host with a UI, you can now host it on a virtual computer and run it in console mode. With a public IP address, clients can now chat from anywhere and at any time, without needing to be on the same LAN.
 
 ## Install and Run the Project
 
 To run this application, you will need:
-
+- Server (virtual computer)
 - Visual Studio (2019 or later)
 - .NET Framework 6.0
 
