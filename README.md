@@ -2,6 +2,9 @@
 
 This is an simple c# application using .NET framework that allows you to chat with other users in LAN by connecting to the server that is hosting in the same LAN. It can help user to send text messages, pictures, videos and files up to 100MB.
 
+## Demonstration
+The demonstration part was carried out during the group's presentation in class.
+
 ## Install and Run the Project
 
 To run this application, you will need:
