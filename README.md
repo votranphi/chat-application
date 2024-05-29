@@ -2,6 +2,9 @@
 
 This is an upgraded version of the chat application for LAN. We have modified the server functionality; instead of running it on a local host with a UI, you can now host it on a virtual computer and run it in console mode. With a public IP address, clients can now chat from anywhere and at any time, without needing to be on the same LAN.
 
+## Demonstration
+Follow this [link](https://drive.google.com/file/d/1MPxiBjQ3Fnu2DjBCjJKZfDzEvZPi0B-N/view?usp=drive_link)
+
 ## Install and Run the Project
 
 To run this application, you will need:
